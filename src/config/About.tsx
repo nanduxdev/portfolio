@@ -1,6 +1,9 @@
+//about.tsx
 import Bun from '@/components/technologies/Bun';
+import Drizzle from '@/components/technologies/Drizzle';
 import JavaScript from '@/components/technologies/JavaScript';
 import MongoDB from '@/components/technologies/MongoDB';
+import MySQL from '@/components/technologies/MySQL';
 import NextJs from '@/components/technologies/NextJs';
 import NodeJs from '@/components/technologies/NodeJs';
 import PostgreSQL from '@/components/technologies/PostgreSQL';
@@ -18,9 +21,11 @@ export const mySkills = [
   <NodeJs key="nodejs" />,
   <PostgreSQL key="postgresql" />,
   <Prisma key="prisma" />,
+  <Drizzle key="drizzle" />,
+  <MySQL key="MySQL" />,
 ];
 
 export const about = {
-  name: 'Ramkrishna Swarnkar',
-  description: `I'm a Full Stack web developer and Open Source Contributor, I love building products to solve real-world problems. I'm specialized in building MVP's.`,
+  name: 'Nandan Nagane',
+  description: `I'm a self-taught Full Stack developer from Pune, India. I build end-to-end web applications using TypeScript, Next.js, NestJS, and PostgreSQL — with a focus on clean architecture, type safety, and maintainable code. Currently levelling up from MERN to a Next.js + NestJS + Drizzle stack through real projects.`,
 };

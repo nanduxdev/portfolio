@@ -1,0 +1,226 @@
+# =============================================================================
+# candidate_profile.yaml — machine-readable verified candidate profile
+# Conforms to: config/candidate_profile.schema.yaml
+# Built by Profile Setup from documents/ — re-run "Run Profile Setup" after
+# adding newer documents. Every field carries evidence; sentinels used for gaps.
+# =============================================================================
+
+profile_version: 1
+generated_at: 2026-08-17
+
+candidate:
+  name: Nandan Nagane
+  headline: Full Stack Developer
+  location: Pune, Maharashtra, India
+  contact:
+    phone: '+91-8485095156'
+    email: naganenandan@gmail.com
+    links:
+      - {
+          url: 'https://linkedin.com/in/nanduxdev',
+          platform: linkedin,
+          evidence: 'resume header; documents/online_profiles.md',
+        }
+      - {
+          url: 'https://github.com/nanduxdev',
+          platform: github,
+          evidence: 'resume header; documents/online_profiles.md',
+        }
+      - { url: unknown, platform: x_twitter, evidence: 'not documented' }
+      - { url: unknown, platform: portfolio, evidence: 'not documented' }
+  evidence: documents/resume/Resume_Nandan_Nagane_Aug2026.pdf
+
+education:
+  - degree: B.Tech Information Technology
+    institution: Dr. J.J. Magdum College of Engineering, Jaysingpur
+    period_or_graduation: 'Graduated: 2026'
+    grade: 'CGPA 8.2/10'
+    evidence: documents/resume/Resume_Nandan_Nagane_Aug2026.pdf
+
+experience:
+  - company: HiddenBrains Infotech
+    title: Software Trainee # exact wording as printed on resume
+    period: Feb 2026 - Jul 2026
+    location: Pune, India
+    bullets:
+      - 'Worked on an internal ERP system using Next.js and NestJS, creating common modules such as User Management, Company Master, and Role-Based Access Control (RBAC).'
+      - 'Gained hands-on experience with modular backend design, API development, and integration with frontend dashboards.'
+    evidence: documents/resume/Resume_Nandan_Nagane_Aug2026.pdf
+  - company: Codtech IT Solutions
+    title: React.js Web Development Intern
+    period: Jun 2025 - Jul 2025
+    location: Remote
+    bullets:
+      - 'Completed a 4-week intensive internship focused on learning and applying React.js in real-world projects.'
+    evidence: documents/resume/Resume_Nandan_Nagane_Aug2026.pdf
+
+projects:
+  - name: JobHunt Spark
+    status: open-source
+    stack: [TypeScript, Node.js, Google Apps Script, Markdown]
+    url: https://github.com/nanduxdev/JobHunt_Spark_Agent
+    drive_url: https://drive.google.com/drive/folders/1gxDtqvaEUsEyTQiTd_fAXPLq6-x7k1g1
+    bullets:
+      - 'AI-powered career intelligence workspace: discovers jobs across 17+ platforms using Gemini agent skills.'
+      - '7-factor scoring rubric ranks opportunities by skills match, location, seniority, and application effort.'
+      - 'Generates ATS-safe LaTeX resumes, cover letters, and recruiter outreach drafts with explicit approval gates.'
+      - 'Tracks full application lifecycle; automated follow-ups at day +5/+10; interview prep on scheduling.'
+    quantitative_claims: []
+    evidence: user-provided (2026-08-19)
+  - name: PostForge AI
+    status: ongoing
+    stack:
+      [Next.js, NestJS, TypeScript, Drizzle ORM, PostgreSQL, Turborepo, Bun]
+    url: https://github.com/nanduxdev/post_forge_turbo
+    bullets:
+      - 'Multi-platform AI-powered social media post scheduler (starting with Twitter/X) to master Next.js, NestJS, and production-grade architecture.'
+      - 'Turborepo monorepo with NestJS backend and Next.js 15 frontend; modular design, shared TypeScript types, clean separation of concerns.'
+      - 'Type-safe Drizzle ORM + PostgreSQL data layer for users, posts, styles, and scheduled jobs.'
+    quantitative_claims: []
+    evidence: documents/resume/Resume_Nandan_Nagane_Aug2026.pdf
+  - name: Task Management App
+    display_name: TaskFlow
+    status: completed
+    stack:
+      [
+        React,
+        Node.js,
+        Express,
+        MongoDB,
+        JWT,
+        Google OAuth,
+        Zod,
+        TanStack Query,
+        Jotai,
+        Tailwind CSS,
+        Shadcn/ui,
+      ]
+    url: https://github.com/nanduxdev/todo-app
+    live_url: https://todo-app-nandan.vercel.app
+    bullets:
+      - 'Full-stack to-do application with Google OAuth, JWT, and Zod validation for protected routes.'
+      - 'SPA frontend with React, Tailwind CSS, Shadcn/ui, TanStack Query, and Jotai for state management.'
+      - 'RESTful API with Express.js for task CRUD operations featuring robust error handling.'
+    quantitative_claims: []
+    evidence: documents/resume/Resume_Nandan_Nagane_Aug2026.pdf
+  - name: LeetCode Problem List Clone
+    status: completed
+    stack: [React, Tailwind CSS, Shadcn/ui, React Router, Vercel]
+    url: https://github.com/nanduxdev/todo-app
+    live_url: https://leetcode-problem-list-clone.vercel.app/problem-list/Favorites
+    bullets:
+      - 'Responsive client-side LeetCode problem-table clone with search, tag filtering, difficulty sorting, reusable accessible components, and client-side routing.'
+    quantitative_claims: []
+    evidence: user-provided (2026-08-19)
+  - name: Dairy Management System
+    status: completed
+    stack:
+      [
+        React,
+        Node.js,
+        Express,
+        PostgreSQL,
+        Prisma,
+        TanStack Query,
+        Vite,
+        Shadcn/ui,
+        Tailwind CSS,
+        bcryptjs,
+        JWT,
+      ]
+    url: https://github.com/nanduxdev/dairy_sys
+    bullets:
+      - 'Full-stack dairy operations system with JWT-based authentication and RBAC (Admin/Farmer) using Express.js and bcryptjs.'
+      - 'React SPA with Vite, Shadcn/ui, Tailwind CSS, TanStack Query for server state management with optimistic updates and caching.'
+      - 'RESTful API with Prisma ORM for PostgreSQL; milk collection tracking, optimized data fetching.'
+    quantitative_claims: [] # a "60% fewer API calls" metric exists in older legacy drafts but NOT in supplied documents — excluded, flag below
+    evidence: documents/resume/Resume_Nandan_Nagane_Aug2026.pdf
+
+technical_skills: # weighted dictionaries — weights owned by Profile Setup
+  core: # weight 1.0
+    TypeScript: 1.0
+    JavaScript: 1.0
+    React.js: 1.0
+    Next.js: 1.0
+    NestJS: 1.0
+    Node.js: 1.0
+    Express.js: 1.0
+    PostgreSQL: 1.0
+    SQL: 1.0
+  strong_supporting: # 0.5 - 0.8
+    Drizzle ORM: 0.8
+    RBAC: 0.8
+    Prisma ORM: 0.7
+    TypeORM: 0.7
+    REST APIs: 0.7
+    JWT: 0.6
+    OAuth: 0.6
+    Docker: 0.6
+    Turborepo: 0.6
+    MongoDB: 0.5
+    Mongoose: 0.5
+  supporting: # 0.4 - 0.5
+    Tailwind CSS: 0.5
+    TanStack Query: 0.5
+    Zod: 0.5
+    Git: 0.4
+    Shadcn/ui: 0.4
+    Vite: 0.4
+    Vercel: 0.4
+    Bun: 0.4
+    HTML5/CSS3: 0.5
+    bcryptjs: 0.4
+    Jotai: 0.4
+  tools: # weight 0 — listed, never scored as claimed stack experience
+    VS Code: 0
+    Postman: 0
+    Claude Code: 0
+    AntiGravity IDE: 0
+    Docker Hub: 0
+    GitHub: 0
+  explicitly_not_claimed:
+    - open-source contributions # nothing in supplied documents supports this
+    - production scale or revenue impact
+    - AWS / Azure / GCP
+    - Kubernetes, CI/CD pipelines
+    - GraphQL, Redis, Kafka
+    - LangChain / LangGraph / vector databases
+    - microservices at scale, system design at scale
+
+certifications_and_awards: [] # none documented in documents/ (legacy hackathon mention has no document here — excluded)
+
+languages_spoken: [] # not documented
+
+constraints_and_preferences: # keep in sync with job_search_constraints.yaml
+  experience_band: { minimum_years: 0, maximum_years: 1 }
+  target_roles:
+    - Full-Stack Developer
+    - Backend Developer
+    - Frontend Developer
+    - Node.js Developer
+    - NestJS Developer
+    - React Developer
+    - Next.js Developer
+    - Software Engineer (entry-level)
+    - Associate Software Engineer
+    - Software Trainee
+    - Graduate Engineer Trainee
+  skill_groups:
+    backend: [Node.js, NestJS, TypeScript, PostgreSQL]
+    frontend: [React.js, Next.js, TypeScript, Tailwind CSS]
+    full_stack: [Next.js, NestJS, React.js, PostgreSQL]
+  acceptable_locations: ['Pune onsite', 'Pune hybrid', 'India remote']
+  compensation_preference: unknown
+
+profile_metadata:
+  profile_version: 1
+  generated_at: 2026-08-17
+  evidence_sources:
+    - documents/resume/Resume_Nandan_Nagane_Aug2026.pdf
+    - documents/online_profiles.md
+  validation_flags:
+    - 'LinkedIn export in documents/linkedin/ is graphic-only (no extractable text layer); LinkedIn-specific claims could not be used.'
+    - 'Codtech hackathon acknowledgement exists in older legacy drafts only — needs a certificate/proof document before reuse.'
+    - 'Spoken languages not documented — needs user confirmation.'
+    - 'Behavioral/working-style profile not documented in supplied documents — needs user confirmation if to be used in scoring factor G.'
+    - "Dairy Management System '60% fewer API calls' metric not on resume — verify against repo or drop."

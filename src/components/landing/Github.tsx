@@ -21,25 +21,27 @@ type ContributionItem = {
   level: 0 | 1 | 2 | 3 | 4;
 };
 
+// Response shape of https://github-contributions-api.jogruber.de/v4/{username}
+type GitHubContributionDay = {
+  date: string; // 'YYYY-MM-DD'
+  count: number;
+  level: number; // 0 - 4
+};
+
 type GitHubContributionResponse = {
-  date: string;
-  contributionCount: number;
-  contributionLevel:
-    | 'NONE'
-    | 'FIRST_QUARTILE'
-    | 'SECOND_QUARTILE'
-    | 'THIRD_QUARTILE'
-    | 'FOURTH_QUARTILE';
+  total?: Record<string, number>; // contributions per year, e.g. { '2025': 92 }
+  contributions: GitHubContributionDay[];
 };
 
 // Helper function to filter contributions to past year
 function filterLastYear(contributions: ContributionItem[]): ContributionItem[] {
   const oneYearAgo = new Date();
   oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+  const today = new Date();
 
   return contributions.filter((item) => {
     const itemDate = new Date(item.date);
-    return itemDate >= oneYearAgo;
+    return itemDate >= oneYearAgo && itemDate <= today;
   });
 }
 
@@ -55,51 +57,53 @@ export default function Github() {
       try {
         setIsLoading(true);
         const response = await fetch(
-          `${githubConfig.apiUrl}/${githubConfig.username}.json`,
+          `${githubConfig.apiUrl}/${githubConfig.username}`,
         );
-        const data: { contributions?: unknown[] } = await response.json();
 
-        if (data?.contributions && Array.isArray(data.contributions)) {
-          // Flatten the nested array structure
-          const flattenedContributions = data.contributions.flat();
+        if (!response.ok) {
+          throw new Error(
+            `GitHub contributions request failed with status ${response.status}`,
+          );
+        }
 
-          // Convert contribution levels to numbers
-          const contributionLevelMap = {
-            NONE: 0,
-            FIRST_QUARTILE: 1,
-            SECOND_QUARTILE: 2,
-            THIRD_QUARTILE: 3,
-            FOURTH_QUARTILE: 4,
-          };
+        const data = (await response.json()) as GitHubContributionResponse;
 
-          // Transform to the expected format
-          const validContributions = flattenedContributions
+        if (Array.isArray(data?.contributions)) {
+          // The v4 API returns a flat list of { date, count, level }, but the
+          // days arrive grouped by year instead of chronological order.
+          // react-activity-calendar expects a continuous, ascending sequence,
+          // so sort by date (ISO strings sort lexically).
+          const validContributions = data.contributions
             .filter(
-              (item: unknown): item is GitHubContributionResponse =>
+              (item): item is GitHubContributionDay =>
                 typeof item === 'object' &&
                 item !== null &&
                 'date' in item &&
-                'contributionCount' in item &&
-                'contributionLevel' in item,
+                'count' in item &&
+                'level' in item,
             )
-            .map((item: GitHubContributionResponse) => ({
+            .map((item) => ({
               date: String(item.date),
-              count: Number(item.contributionCount || 0),
-              level: (contributionLevelMap[
-                item.contributionLevel as keyof typeof contributionLevelMap
-              ] || 0) as ContributionItem['level'],
-            }));
+              count: Number(item.count || 0),
+              level: Math.min(
+                4,
+                Math.max(0, Math.round(Number(item.level) || 0)),
+              ) as ContributionItem['level'],
+            }))
+            .sort((a, b) => a.date.localeCompare(b.date));
 
           if (validContributions.length > 0) {
-            // Calculate total contributions
-            const total = validContributions.reduce(
+            // The API returns every year on record (and zero-padded future
+            // days) — keep only the trailing year ending today.
+            const filteredContributions = filterLastYear(validContributions);
+
+            // Total contributions within the displayed range
+            const total = filteredContributions.reduce(
               (sum, item) => sum + item.count,
               0,
             );
-            setTotalContributions(total);
 
-            // Filter to show only the past year
-            const filteredContributions = filterLastYear(validContributions);
+            setTotalContributions(total);
             setContributions(filteredContributions);
           } else {
             setHasError(true);

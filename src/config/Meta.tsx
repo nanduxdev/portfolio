@@ -9,163 +9,117 @@ export interface PageMeta {
   twitterCard?: 'summary' | 'summary_large_image';
 }
 
-// Base site configuration
 export const siteConfig = {
   name: heroConfig.name,
-  title: 'Sleek Portfolio',
-  description: 'Sleek Portfolio Template by @Ramxcodes',
+  title: `${heroConfig.name} - ${heroConfig.title}`,
+  description:
+    'Full Stack Developer building modern web applications with Next.js, NestJS, React, TypeScript, and PostgreSQL.',
   url: process.env.NEXT_PUBLIC_URL || 'http://localhost:3000',
   ogImage: '/meta/opengraph-image.png',
   author: {
     name: about.name,
-    twitter: '@ramxcodes',
-    github: 'ramxcodes',
-    linkedin: 'ramxcodes',
-    email: 'ramxcodes@gmail.com',
+    github: 'nanduxdev',
+    linkedin: 'nanduxdev',
+    email: 'naganenandan@gmail.com',
   },
   keywords: [
     'portfolio',
     'developer',
-    'full-stack',
-    'react',
-    'nextjs',
-    'typescript',
+    'full-stack developer',
+    'React',
+    'Next.js',
+    'NestJS',
+    'Node.js',
+    'TypeScript',
+    'PostgreSQL',
+    'Drizzle ORM',
     'web development',
     heroConfig.name.toLowerCase(),
   ],
 };
 
 export const pageMetadata: Record<string, PageMeta> = {
-  // Home page
   '/': {
     title: `${heroConfig.name} - ${heroConfig.title}`,
     description: `${about.description} Explore my projects, experience, and technical expertise.`,
     keywords: [
-      'portfolio',
-      'developer',
-      'full-stack',
+      'Nandan Nagane',
+      'full-stack developer',
+      'Next.js developer',
+      'NestJS developer',
+      'React developer',
+      'TypeScript developer',
       'web development',
-      'projects',
     ],
     ogImage: '/meta/hero.png',
     twitterCard: 'summary_large_image',
   },
 
-  // Contact page
   '/contact': {
-    title: 'Contact - Get in Touch',
+    title: `Contact ${about.name}`,
     description:
-      "Get in touch with me for collaborations, projects, or opportunities. I'd love to hear from you!",
-    keywords: ['contact', 'hire', 'collaboration', 'freelance', 'developer'],
+      'Get in touch with Nandan Nagane about software development opportunities, collaborations, or projects.',
+    keywords: [
+      'contact Nandan Nagane',
+      'full-stack developer',
+      'software developer',
+      'developer opportunities',
+    ],
     ogImage: '/assets/logo.png',
     twitterCard: 'summary',
   },
 
-  // Work Experience page
   '/work-experience': {
-    title: 'Work Experience - Professional Journey',
+    title: `Work Experience - ${about.name}`,
     description:
-      'Explore my professional work experience across different companies and roles in software development.',
+      'Explore Nandan Nagane’s professional experience as a Software Trainee at HiddenBrains Infotech and React.js Web Development Intern at Codtech IT Solutions.',
     keywords: [
-      'work experience',
-      'career',
-      'professional',
-      'software developer',
-      'employment history',
+      'Nandan Nagane experience',
+      'HiddenBrains Infotech',
+      'Codtech IT Solutions',
+      'Next.js',
+      'NestJS',
+      'React.js',
     ],
     ogImage: '/meta/work.png',
     twitterCard: 'summary_large_image',
   },
 
-  // Projects page
   '/projects': {
-    title: 'Projects - My Work & Projects Portfolio',
+    title: `Projects - ${about.name}`,
     description:
-      'Discover my projects and work across different technologies and domains. From web apps to mobile solutions.',
+      'Explore Nandan Nagane’s documented full-stack projects, including PostForge AI, JobHunt Spark, TaskFlow, the Dairy Management System, and the LeetCode Problem List Clone.',
     keywords: [
-      'projects',
-      'portfolio',
-      'web development',
-      'applications',
-      'software',
+      'Nandan Nagane projects',
+      'PostForge AI',
+      'JobHunt Spark',
+      'TaskFlow',
+      'Dairy Management System',
+      'full-stack projects',
     ],
     ogImage: '/meta/projects.png',
     twitterCard: 'summary_large_image',
   },
 
-  // Blog page
-  '/blog': {
-    title: 'Blog - Thoughts & Tutorials',
-    description:
-      'Read my thoughts, tutorials, and insights on engineering, programming, and web development.',
-    keywords: [
-      'blog',
-      'tutorials',
-      'programming',
-      'web development',
-      'technical writing',
-    ],
-    ogImage: '/meta/blogs.png',
-    twitterCard: 'summary_large_image',
-  },
-
-  // Resume page
   '/resume': {
-    title: 'Resume - Professional CV',
-    description: `View and download ${heroConfig.name}'s professional resume and CV. Technical skills, experience, and qualifications.`,
+    title: `Resume - ${about.name}`,
+    description: `View ${about.name}'s professional resume, technical skills, experience, education, and software development projects.`,
     keywords: [
-      'resume',
-      'cv',
-      'professional',
-      'skills',
-      'qualifications',
-      'download',
+      'Nandan Nagane resume',
+      'full-stack developer resume',
+      'Next.js developer resume',
+      'NestJS developer resume',
+      'software engineer resume',
     ],
     ogImage: '/meta/resume.png',
     twitterCard: 'summary',
   },
-
-  // Gears page
-  '/gears': {
-    title: 'Gears - My Setup & Tools',
-    description:
-      'Discover the tools, devices, and software I use to get my work done efficiently.',
-    keywords: [
-      'setup',
-      'tools',
-      'devices',
-      'software',
-      'productivity',
-      'development environment',
-    ],
-    ogImage: '/meta/gears.png',
-    twitterCard: 'summary_large_image',
-  },
-
-  // Setup page
-  '/setup': {
-    title: 'Setup Guide - VS Code Configuration',
-    description:
-      'Complete guide to setting up VS Code with my preferred configuration, extensions, and fonts for optimal development.',
-    keywords: [
-      'vscode',
-      'setup',
-      'configuration',
-      'extensions',
-      'development environment',
-      'guide',
-    ],
-    ogImage: '/meta/setup.png',
-    twitterCard: 'summary_large_image',
-  },
 };
 
-// Helper function to get metadata for a specific page
 export function getPageMetadata(pathname: string): PageMeta {
   return pageMetadata[pathname] || pageMetadata['/'];
 }
 
-// Helper function to generate complete metadata object for Next.js
 export function generateMetadata(pathname: string) {
   const pageMeta = getPageMetadata(pathname);
 
@@ -195,7 +149,6 @@ export function generateMetadata(pathname: string) {
       card: pageMeta.twitterCard || 'summary_large_image',
       title: pageMeta.title,
       description: pageMeta.description,
-      creator: siteConfig.author.twitter,
       images: [pageMeta.ogImage || siteConfig.ogImage],
     },
     robots: {

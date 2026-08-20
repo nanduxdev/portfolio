@@ -1,0 +1,71 @@
+# =============================================================================
+# job_search_constraints.yaml — constraints consumed by discovery, gates,
+# and scoring. Derived from candidate evidence + documented user defaults.
+# Source of derivation: candidate_profile.yaml + workspace defaults until
+# contradicted/refined by supplied documents or the user.
+# =============================================================================
+
+constraints_version: 1
+derived_at: 2026-08-17
+
+experience_band:
+  minimum_years: 0
+  maximum_years: 1
+  acceptable_labels: [fresher, graduate, trainee, intern, junior, associate, "entry-level", "0-1 years"]
+
+seniority_exclusions: [Senior, Lead, Staff, Principal, Manager, Architect, Director]
+experience_hard_reject: "> 1 year explicit requirement"
+
+target_roles:
+  - Full-Stack Developer
+  - Backend Developer
+  - Frontend Developer
+  - Node.js Developer
+  - NestJS Developer
+  - React Developer
+  - Next.js Developer
+  - Software Engineer (entry-level)
+  - Associate Software Engineer
+  - Software Trainee
+  - Graduate Engineer Trainee
+  - MERN Stack Developer
+  - PERN Stack Developer
+
+skill_groups:                     # mirrors candidate_profile.yaml; feeds query families
+  backend: [Node.js, NestJS, TypeScript, PostgreSQL]
+  frontend: [React.js, Next.js, TypeScript, Tailwind CSS]
+  full_stack: [Next.js, NestJS, React.js, PostgreSQL]
+  auth_and_data: [REST APIs, RBAC, JWT, ORM]
+
+acceptable_locations:
+  - Pune onsite
+  - Pune hybrid
+  - India remote
+
+rejected_location_rules:
+  - relocation required outside Pune
+  - remote restricted to a country other than India
+
+unclear_remote_rule: >
+  Remote roles with unclear India eligibility (Global/Worldwide wording) are
+  routed to Needs_Review, never auto-accepted.
+
+compensation_preference: unknown   # not documented; user may set later (e.g. "3.5-7 LPA+")
+
+employment_types:
+  preferred: [full-time]
+  allowed_with_condition:
+    - internship: "only if paid and explicitly leads to FTE/PPO"
+  excluded: [unpaid internship, short temporary without FTE path]
+
+posting_freshness_days: 14
+
+role_categories_excluded:
+  - non-technical analyst
+  - QA-only testing
+  - customer/technical support
+  - sales / business development
+  - administrative
+  - content/design-only
+  - devops/infra-only without web development
+  - legacy stacks (PHP/WordPress, outdated CMS)

@@ -145,6 +145,8 @@
   font-family: 'Hanken Grotesk Italic', sans-serif;
 }
 
+
+
 /* Code block copy button styles */
 .prose pre {
   @apply relative;

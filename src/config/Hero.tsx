@@ -23,17 +23,16 @@
  *
  * That's it! Your portfolio will automatically update with your information.
  */
+//hero.tsx
 import Github from '@/components/svgs/Github';
 import LinkedIn from '@/components/svgs/LinkedIn';
 import Mail from '@/components/svgs/Mail';
 import X from '@/components/svgs/X';
 import Bun from '@/components/technologies/Bun';
-import JavaScript from '@/components/technologies/JavaScript';
-import MongoDB from '@/components/technologies/MongoDB';
+import NestJs from '@/components/technologies/NestJs';
 import NextJs from '@/components/technologies/NextJs';
 import NodeJs from '@/components/technologies/NodeJs';
 import PostgreSQL from '@/components/technologies/PostgreSQL';
-import Prisma from '@/components/technologies/Prisma';
 import ReactIcon from '@/components/technologies/ReactIcon';
 // Technology Components
 import TypeScript from '@/components/technologies/TypeScript';
@@ -43,31 +42,24 @@ export const skillComponents = {
   TypeScript: TypeScript,
   ReactIcon: ReactIcon,
   NextJs: NextJs,
-  Bun: Bun,
-  PostgreSQL: PostgreSQL,
+  NestJs: NestJs,
   NodeJs: NodeJs,
-  MongoDB: MongoDB,
-  Prisma: Prisma,
-  JavaScript: JavaScript,
+  PostgreSQL: PostgreSQL,
+  Bun: Bun,
 };
 
 export const heroConfig = {
   // Personal Information
-  name: 'Ram',
+  name: 'Nandan',
   title: 'A Full Stack web developer.',
   avatar: '/assets/logo.png',
 
-  // Skills Configuration
+  // Skills Configuration — drawn from verified core stack in candidate_profile.yaml
   skills: [
     {
-      name: 'Typescript',
+      name: 'TypeScript',
       href: 'https://www.typescriptlang.org/',
       component: 'TypeScript',
-    },
-    {
-      name: 'React',
-      href: 'https://react.dev/',
-      component: 'ReactIcon',
     },
     {
       name: 'Next.js',
@@ -75,9 +67,14 @@ export const heroConfig = {
       component: 'NextJs',
     },
     {
-      name: 'Bun',
-      href: 'https://bun.sh/',
-      component: 'Bun',
+      name: 'NestJS',
+      href: 'https://nestjs.com/',
+      component: 'NestJs',
+    },
+    {
+      name: 'Node.js',
+      href: 'https://nodejs.org/',
+      component: 'NodeJs',
     },
     {
       name: 'PostgreSQL',
@@ -87,9 +84,10 @@ export const heroConfig = {
   ],
 
   // Description Configuration
+  // {skills:N} injects the Nth skill name as a styled badge
   description: {
     template:
-      'I build interactive web apps using {skills:0}, {skills:1}, {skills:2}, {skills:3} and {skills:4}. With a focus on <b>UI</b> design. Enthusiastic about <b>Three.js</b>, driven by a keen eye for design.',
+      'I build full-stack web apps with {skills:0}, {skills:1} and {skills:2}. On the backend I lean on {skills:3} and {skills:4}. I care about <b>clean architecture</b>, type safety, and shipping things that actually work.',
   },
 
   // Buttons Configuration
@@ -109,26 +107,26 @@ export const heroConfig = {
   ],
 };
 
-// Social Links Configuration
+// Social Links Configuration — X/Twitter not documented; omitted per AGENTS.md
 export const socialLinks = [
   {
     name: 'X',
-    href: 'https://x.com/ramxcodes',
+    href: 'https://x.com/nanduxdev',
     icon: <X />,
   },
   {
     name: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/ramxcodes/',
+    href: 'https://www.linkedin.com/in/nanduxdev',
     icon: <LinkedIn />,
   },
   {
     name: 'Github',
-    href: 'https://github.com/ramxcodes',
+    href: 'https://github.com/nanduxdev',
     icon: <Github />,
   },
   {
     name: 'Email',
-    href: 'mailto:ramxcodes@gmail.com',
+    href: 'mailto:naganenandan@gmail.com',
     icon: <Mail />,
   },
 ];

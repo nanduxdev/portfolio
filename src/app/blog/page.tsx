@@ -1,6 +1,7 @@
 import Container from '@/components/common/Container';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { blogConfig } from '@/config/Blog';
 import { generateMetadata as getMetadata } from '@/config/Meta';
 import { getAllTags, getPublishedBlogPosts } from '@/lib/blog';
 import { Metadata } from 'next';
@@ -70,10 +71,39 @@ function BlogPageLoading() {
 export default function BlogPage() {
   const allPosts = getPublishedBlogPosts();
   const allTags = getAllTags();
-
+  const enabled = blogConfig.enabled;
   return (
-    <Suspense fallback={<BlogPageLoading />}>
-      <BlogPageClient initialPosts={allPosts} initialTags={allTags} />
-    </Suspense>
+    <>
+      {enabled ? (
+        <Suspense fallback={<BlogPageLoading />}>
+          <BlogPageClient initialPosts={allPosts} initialTags={allTags} />
+        </Suspense>
+      ) : (
+        <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 px-4 text-center">
+          {/* Decorative top rule */}
+          <div className="flex items-center gap-4">
+            <span className="h-px w-16 bg-gradient-to-r from-transparent to-current opacity-30" />
+            <span className="text-sm tracking-[0.35em] uppercase opacity-50">
+              Blog
+            </span>
+            <span className="h-px w-16 bg-gradient-to-l from-transparent to-current opacity-30" />
+          </div>
+
+          {/* Main heading */}
+          <h1 className="text-6xl leading-none font-light tracking-tight italic sm:text-7xl lg:text-8xl">
+            Coming Soon
+          </h1>
+
+          {/* Thin divider */}
+          <div className="h-px w-24 bg-current opacity-20" />
+
+          {/* Subline */}
+          <p className="text-secondary max-w-xs text-xl leading-relaxed font-light italic sm:text-2xl">
+            Writing takes time.
+            <br /> Good writing takes a little more.
+          </p>
+        </div>
+      )}
+    </>
   );
 }

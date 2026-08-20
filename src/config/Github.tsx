@@ -6,8 +6,8 @@
  */
 
 export const githubConfig = {
-  username: 'ramxcodes',
-  apiUrl: 'https://github-contributions-api.deno.dev',
+  username: 'nanduxdev',
+  apiUrl: 'https://github-contributions-api.jogruber.de/v4',
 
   // Display settings
   title: 'GitHub Activity',
