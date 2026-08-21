@@ -6,6 +6,7 @@ import OnekoCat from '@/components/common/OnekoCat';
 import { Quote } from '@/components/common/Quote';
 import { ThemeProvider } from '@/components/common/ThemeProviders';
 import { Toaster } from '@/components/ui/sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { generateMetadata as getMetadata } from '@/config/Meta';
 import ReactLenis from 'lenis/react';
 import { ViewTransitions } from 'next-view-transitions';
@@ -30,14 +31,16 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <ReactLenis root>
-              <Navbar />
-              {children}
-              <OnekoCat />
-              <Quote />
-              <Footer />
-              <ChatBubble />
-              <UmamiAnalytics />
-              <Toaster position="top-right" richColors />
+              <TooltipProvider>
+                <Navbar />
+                {children}
+                <OnekoCat />
+                <Quote />
+                <Footer />
+                <ChatBubble />
+                <UmamiAnalytics />
+                <Toaster position="top-right" richColors />
+              </TooltipProvider>
             </ReactLenis>
           </ThemeProvider>
         </body>

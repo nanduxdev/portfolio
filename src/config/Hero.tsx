@@ -107,7 +107,6 @@ export const heroConfig = {
   ],
 };
 
-// Social Links Configuration — X/Twitter not documented; omitted per AGENTS.md
 export const socialLinks = [
   {
     name: 'X',

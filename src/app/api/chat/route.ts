@@ -176,11 +176,8 @@ export async function POST(request: NextRequest) {
     };
 
     // Model fallback chain — tried in order if a model is overloaded/unavailable
-    const MODEL_CHAIN = [
-      'gemini-3.6-flash',
-      'gemini-2.5-flash',
-      'gemini-2.0-flash-lite',
-    ];
+    const GEMINI_MODEL = 'gemini-3.7-flash';
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:streamGenerateContent?alt=sse`;
     const RETRYABLE = new Set([429, 500, 502, 503, 504]);
     const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
@@ -188,28 +185,35 @@ export async function POST(request: NextRequest) {
     let lastStatus = 0;
     let lastBody = '';
 
-    outer: for (const model of MODEL_CHAIN) {
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse`;
-      for (let attempt = 0; attempt < 3; attempt++) {
-        if (attempt > 0) await sleep(attempt * 1000); // 1s, 2s backoff
-        const res = await fetch(geminiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-goog-api-key': apiKey,
-          },
-          body: JSON.stringify(requestBody),
-        });
-        if (res.ok) {
-          response = res;
-          break outer; // success — stop trying
-        }
-        lastStatus = res.status;
-        lastBody = await res.text();
-        console.error(
-          `Gemini [${model}] attempt ${attempt + 1} failed: status=${lastStatus} body=${lastBody}`,
-        );
-        if (!RETRYABLE.has(lastStatus)) break; // non-retryable error (e.g. 400) — skip remaining attempts for this model
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) {
+        await sleep(attempt * 1000);
+      }
+
+      const res = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey,
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (res.ok) {
+        response = res;
+        break;
+      }
+
+      lastStatus = res.status;
+      lastBody = await res.text();
+
+      console.error(
+        `Gemini [${GEMINI_MODEL}] attempt ${attempt + 1} failed: ` +
+          `status=${lastStatus} body=${lastBody}`,
+      );
+
+      if (!RETRYABLE.has(lastStatus)) {
+        break;
       }
     }
 
@@ -217,8 +221,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: `Gemini unavailable (${lastStatus}): ${lastBody.slice(0, 200)}`,
+          status: lastStatus,
+          details: lastBody,
         },
-        { status: 502 },
+        { status: lastStatus || 502 },
       );
     }
 

@@ -21,7 +21,15 @@ export const quotes = [
     author: 'Sung Jin-Woo, Solo Leveling',
   },
   {
-    quote: `I’ll take a potato chip… AND EAT IT!`,
-    author: 'Light Yagami, Death Note',
+    quote: `Tatakae Tatakae..!`,
+    author: 'Eren yeager, Attack on Titans',
+  },
+  {
+    quote: `Satisfactory..,that's another word for Mediocrity`,
+    author: 'David Goggins',
+  },
+  {
+    quote: `My magic is never giving up!`,
+    author: 'Asta, Black Clover',
   },
 ];

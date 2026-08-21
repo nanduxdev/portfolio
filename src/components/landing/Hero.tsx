@@ -1,17 +1,15 @@
-import { heroConfig, skillComponents, socialLinks } from '@/config/Hero';
+import { heroConfig, skillComponents } from '@/config/Hero';
 import { parseTemplate } from '@/lib/hero';
 import { cn } from '@/lib/utils';
 import { Link } from 'next-view-transitions';
 import Image from 'next/image';
-import React from 'react';
 
 import Container from '../common/Container';
 import Skill from '../common/Skill';
-import { TrackedLink } from '../common/TrackedLink';
+import SocialLinksComp from '../common/SocialLinks';
 import CV from '../svgs/CV';
 import Chat from '../svgs/Chat';
 import { Button } from '../ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 const buttonIcons = {
   CV: CV,
@@ -58,7 +56,7 @@ export default function Hero() {
         alt="hero"
         width={100}
         height={100}
-        className="size-24 rounded-full bg-blue-300 dark:bg-red-700"
+        className="size-24 rounded-full bg-blue-300 dark:bg-gray-600"
       />
 
       {/* Text Area */}
@@ -99,30 +97,7 @@ export default function Hero() {
 
       {/* Social Links */}
       <div className="mt-8 flex gap-2">
-        {socialLinks.map((link) => (
-          <Tooltip key={link.name} delayDuration={0}>
-            <TooltipTrigger asChild>
-              <TrackedLink
-                href={link.href}
-                key={link.name}
-                className="text-secondary flex items-center gap-2"
-                track={{
-                  name: 'external_link_click',
-                  data: {
-                    url: link.href,
-                    text: link.name,
-                    location: 'hero_social',
-                  },
-                }}
-              >
-                <span className="size-6">{link.icon}</span>
-              </TrackedLink>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{link.name}</p>
-            </TooltipContent>
-          </Tooltip>
-        ))}
+        <SocialLinksComp />
       </div>
     </Container>
   );
