@@ -1,27 +1,28 @@
-# Sleek Portfolio by ramxcodes
+# Nandan Nagane — Personal Portfolio
 
-A modern, responsive portfolio website built with Next.js 15, TypeScript, Tailwind CSS, and Shadcn UI. Features a blog system, project showcase, work experience timeline, and contact form with Telegram integration.
+A modern, responsive personal portfolio website built with **Next.js 15**, **TypeScript**, **Tailwind CSS**, and **Shadcn UI**. Features a project showcase, work experience timeline, AI chat assistant, and a contact form with Telegram integration.
 
-![Portfolio Preview](/public/meta/hero.png)
+## About
 
-## Deploy
+This is the personal portfolio of **Nandan Nagane**, a Full Stack Developer from Pune, India — showcasing my projects, work experience, and technical skills. Built with the same stack I use day-to-day: Next.js, NestJS, TypeScript, and PostgreSQL.
 
-Click here to your portfolio template now:
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Framxcodes%2Fsleek-portfolio&env=TELEGRAM_BOT_TOKEN,TELEGRAM_CHAT_ID,GEMINI_API_KEY,NEXT_PUBLIC_URL,NEXT_PUBLIC_UMAMI_SRC,NEXT_PUBLIC_UMAMI_ID)
+- 🌐 GitHub: [github.com/nanduxdev](https://github.com/nanduxdev)
+- 💼 LinkedIn: [linkedin.com/in/nanduxdev](https://linkedin.com/in/nanduxdev)
+- 📧 Email: naganenandan@gmail.com
 
 ## Features
 
 - **Next.js 15** with App Router
-- **Tailwind CSS** for styling
-- **Shadcn UI** components
-- **Dark/Light** mode
-- **Responsive** design
-- **MDX** for blog posts and project details
-- **Contact Form** with Telegram integration
-- **SEO** optimized
-- **TypeScript** for type safety
-- **Umami Analytics** for privacy-focused web analytics
+- **Tailwind CSS** + **Shadcn UI** components
+- **Dark / Light** mode toggle
+- **Responsive** design across all screen sizes
+- **MDX** for rich project detail pages
+- **AI Chat Assistant** powered by Gemini API
+- **Contact Form** with Telegram bot integration
+- **Umami Analytics** — privacy-focused, cookie-free web analytics
+- **View Transitions** for smooth page navigation
+- **SEO** optimized with metadata, OG tags, and sitemap
+- **TypeScript** throughout for full type safety
 
 ## Prerequisites
 
@@ -81,8 +82,8 @@ NEXT_PUBLIC_UMAMI_ID="your-umami-website-id"
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/ramxcodes/sleek-portfolio.git
-   cd sleek-portfolio
+   git clone https://github.com/nanduxdev/portfolio.git
+   cd portfolio
    ```
 
 2. Install dependencies:
@@ -109,49 +110,44 @@ NEXT_PUBLIC_UMAMI_ID="your-umami-website-id"
 
 ## Configuration
 
-The project uses configuration files in the `src/config` directory for easy customization:
+All site content lives in `src/config/` — edit these files to update the site:
 
-- `About.tsx` - About section content
-- `Contact.tsx` - Contact form settings
-- `Experience.tsx` - Work experience details
-- `Footer.tsx` - Footer links and content
-- `Gears.tsx` - Setup/gear section
-- `Hero.tsx` - Hero section content
-- `Meta.tsx` - SEO and metadata
-- `Navbar.tsx` - Navigation links
-- `Projects.tsx` - Project showcase settings
-- `Quote.ts` - Random quotes configuration
-- `Resume.ts` - Resume section details
-- `Setup.tsx` - Development setup information
-- `cat.ts` - Enable disable the cat
+| File             | Controls                                                 |
+| ---------------- | -------------------------------------------------------- |
+| `Hero.tsx`       | Name, headline, description, skills badges, social links |
+| `About.tsx`      | About section bio                                        |
+| `Experience.tsx` | Work experience timeline entries                         |
+| `Projects.tsx`   | Project cards and metadata                               |
+| `Contact.tsx`    | Contact form settings                                    |
+| `Navbar.tsx`     | Navigation links                                         |
+| `Footer.tsx`     | Footer links and content                                 |
+| `Meta.tsx`       | SEO metadata, OG image, site URL                         |
+| `Resume.ts`      | Resume / CV section                                      |
+| `Quote.ts`       | Random quote pool                                        |
+| `cat.ts`         | Toggle the Oneko cat easter egg                          |
 
-## Adding New Technology Icons
+## Adding Technology Icons
 
-1. Visit [Devicon](https://devicon.dev/) to find the icon you want to add
+1. Visit [Devicon](https://devicon.dev/) to find the icon SVG
 2. Create a new component in `src/components/technologies/`
-3. Follow the existing component structure for consistency
-
-Example:
+3. Follow the pattern of existing components:
 
 ```tsx
-export const NewTechIcon = () => {
-  return <svg>// SVG content from devicon</svg>;
-};
+export default function MyTech() {
+  return (
+    <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+      {/* SVG content from Devicon */}
+    </svg>
+  );
+}
 ```
 
-## Adding Content
-
-### Blog Posts
-
-1. Create a new MDX file in `src/data/blog/`
-2. Add metadata and content following existing post structure
-3. Add blog thumbnail in `public/blog/`
-
-### Projects
+## Adding Projects
 
 1. Create a new MDX file in `src/data/projects/`
-2. Add metadata and content following existing project structure
-3. Add project thumbnail in `public/project/`
+2. Write the project description and tech breakdown in MDX
+3. Add a project thumbnail to `public/project/`
+4. Register the project entry in `src/config/Projects.tsx`
 
 ## License
 
