@@ -1,6 +1,6 @@
 'use client';
 
-import { socialLinks } from '@/config/Hero';
+import { type socialLinkInterface } from '@/config/Hero';
 import {
   Tooltip,
   TooltipContent,
@@ -9,7 +9,11 @@ import {
 
 import { TrackedLink } from './TrackedLink';
 
-export default function SocialLinksComp() {
+interface SocialLinksCompProps {
+  socialLinks: socialLinkInterface[];
+}
+
+export default function SocialLinksComp({ socialLinks }: SocialLinksCompProps) {
   return (
     <>
       {socialLinks.map((link) => (

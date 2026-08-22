@@ -75,3 +75,11 @@ knowledge of "what portfolios usually have."
   as a "template example" left unedited.
 - If a request is ambiguous about which section it targets, ask a quick clarifying question rather than
   guessing.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `dist/docs/` before writing any code. Heed deprecation notices.
+
+<!-- END:nextjs-agent-rules -->

@@ -1,9 +1,6 @@
-//about.tsx
 import Bun from '@/components/technologies/Bun';
-import Drizzle from '@/components/technologies/Drizzle';
 import JavaScript from '@/components/technologies/JavaScript';
 import MongoDB from '@/components/technologies/MongoDB';
-import MySQL from '@/components/technologies/MySQL';
 import NextJs from '@/components/technologies/NextJs';
 import NodeJs from '@/components/technologies/NodeJs';
 import PostgreSQL from '@/components/technologies/PostgreSQL';
@@ -21,8 +18,6 @@ export const mySkills = [
   <NodeJs key="nodejs" />,
   <PostgreSQL key="postgresql" />,
   <Prisma key="prisma" />,
-  <Drizzle key="drizzle" />,
-  <MySQL key="MySQL" />,
 ];
 
 export const about = {

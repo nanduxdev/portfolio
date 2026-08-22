@@ -35,10 +35,7 @@ const ChatBubble: React.FC = () => {
       id: 1,
       text: "Hello! I'm Nandan's Portfolio Assistant. How can I help you?",
       sender: 'bot',
-      timestamp: new Date().toLocaleTimeString('en-GB', {
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
+      timestamp: '',
     },
   ]);
   const [newMessage, setNewMessage] = useState('');
@@ -58,6 +55,17 @@ const ChatBubble: React.FC = () => {
       }
     }
   }, [messages]);
+
+  useEffect(() => {
+    setMessages((prev) => {
+      const updated = [...prev];
+      updated[0].timestamp = new Date().toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      return updated;
+    });
+  }, []);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || isLoading) return;

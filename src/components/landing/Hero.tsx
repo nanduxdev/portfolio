@@ -1,4 +1,4 @@
-import { heroConfig, skillComponents } from '@/config/Hero';
+import { heroConfig, skillComponents, socialLinks } from '@/config/Hero';
 import { parseTemplate } from '@/lib/hero';
 import { cn } from '@/lib/utils';
 import { Link } from 'next-view-transitions';
@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 import Container from '../common/Container';
 import Skill from '../common/Skill';
-import SocialLinksComp from '../common/SocialLinks';
+import SocialLinksComp from '../common/SocialLinksComp';
 import CV from '../svgs/CV';
 import Chat from '../svgs/Chat';
 import { Button } from '../ui/button';
@@ -97,7 +97,7 @@ export default function Hero() {
 
       {/* Social Links */}
       <div className="mt-8 flex gap-2">
-        <SocialLinksComp />
+        <SocialLinksComp socialLinks={socialLinks} />
       </div>
     </Container>
   );

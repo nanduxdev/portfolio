@@ -107,7 +107,13 @@ export const heroConfig = {
   ],
 };
 
-export const socialLinks = [
+export interface socialLinkInterface {
+  name: string;
+  href: string;
+  icon: React.ReactNode;
+}
+
+export const socialLinks: socialLinkInterface[] = [
   {
     name: 'X',
     href: 'https://x.com/nanduxdev',
