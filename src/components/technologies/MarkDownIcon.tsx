@@ -26,7 +26,7 @@ export default function MarkDownIcon({
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.75"
-        d="M5 15V9l3 3 3-3v6m3-6v6m0 0 2-2m-2 2-2-2"
+        d="M5 15V9l3 3 3-3v6m5-6v6m0 0 2-2m-2 2-2-2"
       />
     </svg>
   );
