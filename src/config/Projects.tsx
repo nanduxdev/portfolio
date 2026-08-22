@@ -1,5 +1,6 @@
 import ExpressJs from '@/components/technologies/ExpressJs';
-import Github from '@/components/technologies/Github';
+import Gemini from '@/components/technologies/Gemini';
+import MarkDownIcon from '@/components/technologies/MarkDownIcon';
 import MongoDB from '@/components/technologies/MongoDB';
 import NestJs from '@/components/technologies/NestJs';
 import NextJs from '@/components/technologies/NextJs';
@@ -20,9 +21,9 @@ export const projects: Project[] = [
       'AI-powered career intelligence workspace that automates job discovery, scoring, application generation, and tracking across 17+ platforms from a single Google Drive folder.',
     image: '/project/job-spark.png',
     technologies: [
-      { name: 'TypeScript', icon: <TypeScript key="typescript" /> },
-      { name: 'Node.js', icon: <NodeJs key="nodejs" /> },
-      { name: 'GitHub', icon: <Github key="github" /> },
+      { name: 'Gemini', icon: <Gemini key="gemini" /> },
+
+      { name: 'SKILLS.md', icon: <MarkDownIcon key="SKILLS.md" /> },
     ],
     github: 'https://github.com/nanduxdev/JobHunt_Spark_Agent',
     status: 'completed',
