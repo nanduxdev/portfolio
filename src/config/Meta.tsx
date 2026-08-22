@@ -66,7 +66,7 @@ export const pageMetadata: Record<string, PageMeta> = {
       'developer opportunities',
     ],
     ogImage: '/assets/logo.png',
-    twitterCard: 'summary',
+    twitterCard: 'summary_large_image',
   },
 
   '/work-experience': {
