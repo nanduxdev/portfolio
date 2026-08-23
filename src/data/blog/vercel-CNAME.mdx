@@ -1,0 +1,349 @@
+---
+title: "Why Vercel Prefers CNAME: The DNS Record Types That Finally Made Deployment Click"
+description: "A practical breakdown of A, AAAA, CNAME, NS, SOA, MX, and TXT records—and why Vercel uses a CNAME target for www while the apex domain needs an A record."
+date: "2026-08-23"
+tags:
+  - DNS
+  - Vercel
+  - Deployment
+  - Next.js
+  - DevOps
+---
+
+I was setting up `nandux.dev` on Vercel and expected the process to be simple: buy a domain, point it to Vercel, done.
+
+Then Vercel showed me an A record for the root domain, a CNAME record for `www`, a recommendation to redirect the apex domain to `www`, and a project-specific hostname that looked like this:
+
+```text
+0f35b3bdba90d866.vercel-dns-017.com.
+```
+
+At that point I had the same question I think many developers hit during their first deployment:
+
+> Why can't I point everything to one IP address? And why does Vercel care so much about CNAME records?
+
+Here's what finally clicked: DNS is not only a phonebook that turns domain names into IP addresses. It is also a set of routing rules, ownership records, email records, verification records, and service-discovery records.
+
+This is the breakdown I wish I had before touching the GoDaddy DNS dashboard.
+
+## The setup I was trying to build
+
+I wanted a clean public portfolio URL:
+
+```text
+https://nandux.dev
+```
+
+But I also wanted visitors who type the `www` version to reach the same site:
+
+```text
+https://www.nandux.dev
+```
+
+The final DNS shape looks like this:
+
+```text
+nandux.dev       → A record     → Vercel edge IP
+www.nandux.dev   → CNAME record → Vercel-managed hostname
+```
+
+Both routes reach Vercel. The difference is *how* DNS gets there.
+
+## DNS before record types
+
+DNS stands for Domain Name System. When I type a URL in the browser, the browser cannot connect to `nandux.dev` directly—it needs a network address.
+
+A DNS lookup answers questions such as:
+
+```text
+Where is nandux.dev?
+Where should email for nandux.dev go?
+Which server is allowed to answer DNS queries for nandux.dev?
+Can this domain prove ownership of a service?
+```
+
+A **DNS zone** is the collection of those rules for a domain. For me, the zone is:
+
+```text
+nandux.dev
+```
+
+The **apex** (also called root or naked domain) is the domain without a prefix:
+
+```text
+nandux.dev
+```
+
+These are subdomains:
+
+```text
+www.nandux.dev
+api.nandux.dev
+blog.nandux.dev
+```
+
+The prefixes—`www`, `api`, and `blog`—are the subdomains.
+
+## The DNS record types that matter
+
+I initially thought every DNS record was just another way to point a domain somewhere. That is not true. Each type exists to answer a different networking question.
+
+| Record | What it answers | Example |
+| --- | --- | --- |
+| `A` | What IPv4 address should this hostname use? | `nandux.dev → 216.198.79.1` |
+| `AAAA` | What IPv6 address should this hostname use? | `api.nandux.dev → 2606:...` |
+| `CNAME` | Which hostname is this an alias for? | `www.nandux.dev → <vercel-hostname>` |
+| `NS` | Which nameservers are authoritative for this domain? | `nandux.dev → GoDaddy nameservers` |
+| `SOA` | What is the authority/version metadata for this DNS zone? | Zone configuration managed by the DNS provider |
+| `MX` | Which server receives email for this domain? | `mail provider hostname` |
+| `TXT` | What verification or policy text belongs to this domain? | Google verification, SPF, DKIM, DMARC |
+
+For a basic Vercel portfolio, I only had to edit two records: one `A` record and one `CNAME` record.
+
+## A records: hostname to IPv4 address
+
+An A record maps a hostname directly to an IPv4 address:
+
+```text
+Type:  A
+Name:  @
+Value: 216.198.79.1
+```
+
+In a DNS dashboard, `@` is shorthand for the apex domain. So the record means:
+
+```text
+nandux.dev → 216.198.79.1
+```
+
+The browser asks DNS for the IP address of `nandux.dev`, receives that address, and connects to Vercel's network.
+
+### A versus AAAA
+
+An `AAAA` record does the same job for IPv6:
+
+```text
+A     → IPv4, such as 216.198.79.1
+AAAA  → IPv6, such as 2001:db8:85a3::8a2e:370:7334
+```
+
+I did not add an AAAA record manually. The rule here is simple: use exactly the records Vercel asks for. Adding a random IPv6 record because it "looks modern" can break routing.
+
+## CNAME records: hostname to hostname
+
+A CNAME means **canonical name**. In practical terms, it is an alias.
+
+```text
+Type:  CNAME
+Name:  www
+Value: 0f35b3bdba90d866.vercel-dns-017.com.
+```
+
+That says:
+
+```text
+www.nandux.dev
+    is an alias for
+0f35b3bdba90d866.vercel-dns-017.com
+```
+
+Notice what is missing: there is no IP address in the CNAME record.
+
+The resolver follows the alias and asks for the A/AAAA records of the Vercel hostname. Vercel can return the current addresses for its edge network.
+
+```text
+www.nandux.dev
+    ↓ CNAME
+Vercel-managed hostname
+    ↓ A / AAAA lookup
+Current Vercel edge IP address(es)
+    ↓
+Vercel routes the request to my project
+```
+
+> Think of an A record like saving a person's physical street address. A CNAME is more like saving their contact card: they can move, update the number behind the contact, and I do not have to edit my address book.
+
+## Why Vercel prefers CNAME for `www`
+
+The real benefit is not that a CNAME is automatically faster or more reliable. The benefit is **infrastructure flexibility**.
+
+With an A record, I configure a specific IP address in GoDaddy:
+
+```text
+nandux.dev → 216.198.79.1
+```
+
+With a CNAME, I configure a stable Vercel hostname:
+
+```text
+www.nandux.dev → 0f35b3bdba90d866.vercel-dns-017.com
+```
+
+Vercel owns that target hostname. Behind it, Vercel can:
+
+- Add or remove edge IP addresses.
+- Change network routing.
+- Serve visitors from different edge locations.
+- Update platform infrastructure without asking me to edit GoDaddy DNS.
+- Keep the hostname mapped to the right Vercel project.
+
+I originally pictured this as "Vercel moves my app to another machine." That is not quite how a platform like Vercel works.
+
+The final IP is usually an entry point into Vercel's global edge network, not one permanent server where my Next.js code lives. Static files can be served from a CDN cache, while dynamic rendering or API code runs on Vercel-managed compute when needed.
+
+## How Vercel knows which project to serve
+
+Another thing that confused me: if many sites share Vercel edge IPs, how can Vercel know which site I requested?
+
+The IP gets the request to Vercel's building. The hostname tells Vercel which apartment to deliver it to.
+
+```text
+Vercel edge IP       = building address
+www.nandux.dev       = apartment number
+Production deployment = the app version inside that apartment
+```
+
+A request roughly travels like this:
+
+```text
+www.nandux.dev
+    ↓ DNS resolves to Vercel
+Browser connects to a Vercel edge endpoint
+    ↓
+TLS SNI identifies www.nandux.dev
+    ↓
+HTTP Host header identifies www.nandux.dev
+    ↓
+Vercel domain mapping finds my project
+    ↓
+Vercel selects the Production environment
+    ↓
+Vercel serves the current Production deployment
+```
+
+The hostname is what lets Vercel choose the right certificate and route a request to the correct project. The IP alone is not enough.
+
+## Why the apex domain cannot use a normal CNAME
+
+At this point, I had a follow-up question: if CNAME gives Vercel so much flexibility, why not use it for `nandux.dev` too?
+
+The answer is an old but important DNS rule:
+
+> A hostname with a CNAME cannot have other DNS records at that same hostname.
+
+A CNAME means, "this name is only an alias—follow the target hostname." That conflicts with local DNS records at the same name.
+
+The apex domain must contain records like:
+
+```text
+nandux.dev  NS   <authoritative nameserver>
+nandux.dev  SOA  <zone authority metadata>
+```
+
+So this is valid:
+
+```text
+www.nandux.dev  CNAME  0f35b3bdba90d866.vercel-dns-017.com.
+```
+
+But this is not valid in standard DNS:
+
+```text
+nandux.dev  CNAME  0f35b3bdba90d866.vercel-dns-017.com.
+nandux.dev  NS     ...
+nandux.dev  SOA    ...
+```
+
+The CNAME would need to be the only data at `nandux.dev`, but the zone needs its NS and SOA records there. That is why the apex usually uses an A record while `www` can use a CNAME.
+
+Some DNS providers offer `ALIAS`, `ANAME`, or CNAME flattening to work around this. Those are provider features, not ordinary DNS CNAME records.
+
+## DNS routing is not the same as a redirect
+
+This distinction saved me from mixing up two unrelated concepts.
+
+A CNAME is a **DNS lookup rule**:
+
+```text
+www.nandux.dev → Vercel hostname
+```
+
+It does not change the URL in the browser.
+
+A redirect is an **HTTP response**:
+
+```text
+nandux.dev → https://www.nandux.dev
+```
+
+It does change the URL in the browser.
+
+Vercel can receive a request for one hostname and respond with a `307` or `308` redirect to another hostname. DNS gets the request to Vercel first; then Vercel performs the redirect.
+
+## Common mistakes I nearly made
+
+### Pointing `www` to an IP with a CNAME
+
+A CNAME value must be a hostname, not an IP address.
+
+```text
+# Wrong
+www CNAME 216.198.79.1
+
+# Correct shape
+www CNAME 0f35b3bdba90d866.vercel-dns-017.com.
+```
+
+If I want to point to an IP, I need an A or AAAA record instead.
+
+### Assuming the Vercel deployment URL is always the DNS target
+
+Vercel gives deployment URLs, project aliases, and project-specific DNS targets. They have different jobs.
+
+The safest rule is: copy the exact A or CNAME value Vercel displays in **Project Settings → Domains**. Do not guess based on a URL in the Deployments page.
+
+### Having both `www` and apex serve the same page without a redirect
+
+Both can technically work, but then users and search engines see two addresses for the same content:
+
+```text
+https://nandux.dev
+https://www.nandux.dev
+```
+
+Choose one canonical URL and redirect the other one. I prefer the clean apex URL, so my intended final behavior is:
+
+```text
+www.nandux.dev → https://nandux.dev
+```
+
+### Adding records that Vercel did not ask for
+
+DNS dashboards expose a lot of record types—HTTPS, SRV, CAA, AAAA, and more. Seeing them does not mean I need to add them.
+
+For this setup, Vercel's requested records are the source of truth.
+
+## What I would do differently next time
+
+Next time, I would start with Vercel's domain configuration screen, not the GoDaddy UI.
+
+My checklist would be:
+
+1. Add both `nandux.dev` and `www.nandux.dev` to the Vercel project.
+2. Choose one canonical public URL.
+3. Copy the exact A and CNAME values Vercel provides.
+4. Update only those records in GoDaddy.
+5. Remove conflicting old records.
+6. Wait for DNS propagation, then use Vercel's Refresh button.
+7. Verify both URLs and confirm the non-canonical URL redirects correctly.
+
+The biggest lesson: deployment is not only about getting a green build on Vercel. DNS is the layer that tells the internet where the build lives—and understanding A records versus CNAME records makes the Vercel setup much less mysterious.
+
+If you are setting up your first custom domain, start by deciding your canonical URL. Then let Vercel tell you the exact DNS values it needs. That one habit avoids most of the confusion I had.
+
+## Further reading
+
+- [Vercel: DNS best practices](https://vercel.com/docs/domains/working-with-dns)
+- [Vercel: Troubleshooting domains](https://vercel.com/docs/domains/troubleshooting)
+- [Cloudflare: What is a CNAME record?](https://www.cloudflare.com/learning/dns/dns-records/dns-cname-record/)
+- [Cloudflare: What is an AAAA record?](https://www.cloudflare.com/learning/dns/dns-records/dns-aaaa-record/)
