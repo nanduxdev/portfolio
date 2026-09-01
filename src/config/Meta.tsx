@@ -101,6 +101,22 @@ export const pageMetadata: Record<string, PageMeta> = {
     twitterCard: 'summary_large_image',
   },
 
+  '/blog': {
+    title: `Blog - ${about.name}`,
+    description:
+      'Notes on DNS, deployment, local LLMs, and the full-stack work I’m learning in public.',
+    keywords: [
+      'Nandan Nagane blog',
+      'DNS',
+      'Vercel',
+      'Vast.ai',
+      'Ollama',
+      'Next.js',
+    ],
+    ogImage: '/meta/opengraph-image.png',
+    twitterCard: 'summary_large_image',
+  },
+
   '/resume': {
     title: `Resume - ${about.name}`,
     description: `View ${about.name}'s professional resume, technical skills, experience, education, and software development projects.`,

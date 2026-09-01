@@ -25,9 +25,11 @@ interface BlogPostPageProps {
 export async function generateStaticParams() {
   const slugs = getBlogPostSlugs();
 
-  return slugs.map((slug) => ({
-    slug,
-  }));
+  return slugs
+    .filter((slug) => getBlogPostBySlug(slug)?.frontmatter.isPublished)
+    .map((slug) => ({
+      slug,
+    }));
 }
 
 // Generate metadata for each blog post
@@ -45,6 +47,7 @@ export async function generateMetadata({
   }
 
   const { title, description, image } = post.frontmatter;
+  const ogImage = image || siteConfig.ogImage;
 
   return {
     metadataBase: new URL(siteConfig.url),
@@ -53,14 +56,14 @@ export async function generateMetadata({
     openGraph: {
       title,
       description,
-      images: [image],
+      images: [ogImage],
       type: 'article',
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [image],
+      images: [ogImage],
     },
   };
 }

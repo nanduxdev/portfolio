@@ -28,8 +28,26 @@ export function BlogCard({ post }: BlogCardProps) {
 
   return (
     <Card className="group h-full w-full overflow-hidden border-gray-100 p-0 shadow-none transition-all dark:border-gray-800">
-      <CardHeader className="p-0">
-        <div className="relative aspect-video overflow-hidden">
+      {image ? (
+        <CardHeader className="p-0">
+          <div className="relative aspect-video overflow-hidden">
+            <TrackedLink
+              href={`/blog/${slug}`}
+              track={{
+                name: 'button_click',
+                data: {
+                  buttonId: 'blog_card_image',
+                  section: 'blog_card',
+                  action: slug,
+                },
+              }}
+            >
+              <Image src={image} alt={title} fill className="object-cover" />
+            </TrackedLink>
+          </div>
+        </CardHeader>
+      ) : (
+        <CardHeader className="p-0">
           <TrackedLink
             href={`/blog/${slug}`}
             track={{
@@ -41,10 +59,12 @@ export function BlogCard({ post }: BlogCardProps) {
               },
             }}
           >
-            <Image src={image} alt={title} fill className="object-cover" />
+            <div className="from-muted to-muted/40 flex aspect-video items-end bg-gradient-to-br p-6">
+              <p className="line-clamp-3 text-lg font-semibold">{title}</p>
+            </div>
           </TrackedLink>
-        </div>
-      </CardHeader>
+        </CardHeader>
+      )}
       <CardContent>
         <div className="space-y-3">
           <TrackedLink

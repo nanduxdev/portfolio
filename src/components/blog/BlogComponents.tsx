@@ -1,9 +1,11 @@
 import Image from 'next/image';
 import React from 'react';
 
+import { BlogDiagram } from './BlogDiagram';
 import { CodeCopyButton } from './CodeCopyButton';
 
 export const BlogComponents = {
+  BlogDiagram,
   // Override default image component
   img: ({
     src,
@@ -132,7 +134,30 @@ export const BlogComponents = {
       return '';
     };
 
+    const codeElement = React.Children.toArray(children).find(
+      React.isValidElement,
+    );
+    const className =
+      codeElement &&
+      typeof codeElement.props === 'object' &&
+      codeElement.props !== null &&
+      'className' in codeElement.props
+        ? String((codeElement.props as { className?: string }).className ?? '')
+        : '';
     const codeText = getTextContent(children);
+
+    if (className.includes('language-mermaid')) {
+      const lines = codeText.split('\n');
+      let caption: string | undefined;
+      let chart = codeText.trim();
+
+      if (lines[0]?.startsWith('%% ')) {
+        caption = lines[0].slice(3).trim();
+        chart = lines.slice(1).join('\n').trim();
+      }
+
+      return <BlogDiagram caption={caption} chart={chart} />;
+    }
 
     return (
       <div className="group relative mb-4">

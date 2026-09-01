@@ -1,7 +1,7 @@
 export interface BlogFrontmatter {
   title: string;
   description: string;
-  image: string;
+  image?: string;
   tags: string[];
   date: string;
   isPublished: boolean;
