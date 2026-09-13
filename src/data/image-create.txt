@@ -1,0 +1,196 @@
+Create a premium editorial-style technical blog cover image based on the blog content provided below.
+
+The visual style MUST remain consistent across all my blog covers.
+
+REFERENCE STYLE:
+Use the attached reference image as the primary visual-style reference.
+
+Overall aesthetic:
+- Minimalist
+- Elegant
+- Editorial
+- Technical / engineering aesthetic
+- Premium developer-blog / research-notebook feeling
+- Lots of intentional whitespace
+- Sophisticated rather than flashy
+- Clean and slightly futuristic
+- Similar visual language to high-end technical documentation, architecture diagrams, and experimental engineering sketches
+
+CANVAS:
+- Wide landscape composition
+- 16:9 aspect ratio
+- High resolution
+- White or extremely subtle off-white background
+
+BACKGROUND:
+- Very subtle thin mathematical/technical grid covering the entire canvas
+- Grid lines should be extremely light and understated
+- Add extremely subtle shader-like lighting / soft gradients in the background
+- The background must remain predominantly white
+- No dark background
+- No colorful gradient
+- No distracting textures
+- No photographic environment
+
+TYPOGRAPHY / HEADER:
+Place the blog title prominently in the upper portion of the image.
+
+The title should:
+- Be large
+- Be elegant
+- Be highly readable
+- Use a sophisticated editorial serif typeface similar to the reference
+- Have strong typographic hierarchy
+- Be centered horizontally
+- Occupy the upper-middle region
+- Use black or near-black typography
+
+If the title contains multiple conceptual parts, create a clear hierarchy similar to:
+small introductory phrase
++
+large bold main title
+
+However, DO NOT invent additional words.
+
+The title must be reproduced EXACTLY from the provided blog title.
+
+CENTRAL VISUAL:
+Analyze the blog content and identify its single most important technical concept.
+
+Create ONE elegant central diagram / artifact / conceptual illustration representing that concept.
+
+Do NOT simply draw a generic computer or generic programming illustration.
+
+Instead, choose a visual metaphor that is specifically relevant to the blog.
+
+Examples:
+
+- Infrastructure / cloud → elegant architecture/network topology diagram
+- GPU / AI inference → GPU architecture, compute pipeline, tensor flow, or neural computation diagram
+- Docker → layered container architecture
+- Kubernetes → abstract cluster/network topology
+- SSH → terminal/network connection visualization
+- APIs → request/response flow architecture
+- Databases → elegant database/storage architecture
+- Monorepos → repository/package dependency graph
+- TypeScript → type relationships / compilation pipeline
+- Authentication → identity/authentication flow
+- Distributed systems → nodes communicating across a network
+- Algorithms → elegant geometric algorithm visualization
+- Binary search → search-space reduction diagram
+- Networking → packet/data-flow visualization
+- Web development → browser/server/request architecture
+- AI agents → agent/tool/model/environment interaction diagram
+
+The central illustration should feel like a sophisticated technical artifact rather than a conventional infographic.
+
+VISUAL STYLE OF CENTRAL ARTIFACT:
+- Thin precision linework
+- Delicate wireframe geometry
+- Subtle technical blueprint aesthetic
+- Very light blue/lavender-gray linework similar to the reference image
+- Fine mesh / wireframe details where appropriate
+- Elegant 3D perspective
+- Slightly surreal conceptual composition
+- Soft translucent elements
+- Small nodes, connectors, arrows, paths, particles, or geometric components when relevant
+- Carefully balanced composition
+- Visually complex enough to be interesting but minimal enough to remain elegant
+
+The diagram should appear to be floating naturally in the whitespace beneath the title.
+
+IMPORTANT:
+Do NOT make the central visual look like a generic stock illustration.
+Do NOT use cartoon aesthetics.
+Do NOT use flat corporate vector art.
+Do NOT use excessive colors.
+Do NOT create a conventional presentation slide.
+Do NOT put large amounts of explanatory text inside the diagram.
+
+The central artifact should communicate the blog's idea visually without requiring labels everywhere.
+
+COMPOSITION:
+Maintain a large amount of negative space.
+
+Approximate layout:
+
+                 BLOG TITLE
+          -----------------------
+
+                  ↓
+
+             CENTRAL
+       TECHNICAL ARTIFACT
+          / DIAGRAM /
+       CONCEPTUAL OBJECT
+
+                  ↓
+
+        large amount of whitespace
+
+                                      @nanduxdev
+
+
+AUTHOR SIGNATURE:
+Place the exact text:
+
+@nanduxdev
+
+in the bottom-right corner.
+
+This author signature MUST remain exactly "@nanduxdev" for every image.
+
+Use a small elegant italic/editorial serif style.
+
+Do NOT add:
+- "by"
+- "written by"
+- social media icons
+- website URLs
+- additional author information
+
+Only display:
+
+@nanduxdev
+
+The signature should be subtle and relatively small, but clearly visible.
+
+COLOR PALETTE:
+- White / off-white background
+- Black typography
+- Very pale blue / lavender technical illustration
+- Extremely subtle gray grid
+- Extremely subtle shader lighting
+
+Keep the palette restrained and sophisticated.
+
+LIGHTING:
+Use extremely soft studio-like illumination and subtle shader gradients.
+The central artifact may have delicate translucent highlights and depth, but it should remain primarily line-art / wireframe.
+
+QUALITY:
+- Extremely clean
+- Sharp typography
+- Precise geometry
+- Fine linework
+- Premium editorial composition
+- No clutter
+- No unnecessary decorative elements
+- No random icons
+- No watermarks
+
+MOST IMPORTANT RULE:
+The image should look like it belongs to the SAME DESIGN SYSTEM as the provided reference image.
+
+Only the following should change from blog to blog:
+1. The title
+2. The central technical concept / artifact
+
+The background, typography hierarchy, whitespace, subtle grid, restrained palette, and "@nanduxdev" signature should remain visually consistent.
+
+BLOG TO ANALYZE:
+
+BLOG TITLE:
+
+
+BLOG CONTENT:

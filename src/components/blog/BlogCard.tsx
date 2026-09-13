@@ -41,8 +41,16 @@ export function BlogCard({ post }: BlogCardProps) {
                   action: slug,
                 },
               }}
+              className="relative block h-full w-full"
             >
-              <Image src={image} alt={title} fill className="object-cover" />
+              <Image
+                src={image}
+                alt={title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                priority
+              />
             </TrackedLink>
           </div>
         </CardHeader>
