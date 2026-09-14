@@ -75,7 +75,7 @@ export function ProjectDialog({
               {project.technologies.map((tech, index) => (
                 <Tooltip key={index}>
                   <TooltipTrigger asChild>
-                    <div className="flex cursor-default items-center gap-1.5 rounded-md border border-gray-200 px-2 py-1 text-xs dark:border-gray-700">
+                    <div className="flex cursor-default items-center gap-2.5 rounded-md border border-gray-200 px-2 py-1 text-xs dark:border-gray-700">
                       <span className="size-4 shrink-0">{tech.icon}</span>
                       <span>{tech.name}</span>
                     </div>

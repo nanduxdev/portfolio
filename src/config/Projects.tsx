@@ -1,8 +1,9 @@
+import BetterAuth from '@/components/technologies/BetterAuth';
+import Drizzle from '@/components/technologies/Drizzle';
 import ExpressJs from '@/components/technologies/ExpressJs';
 import Gemini from '@/components/technologies/Gemini';
 import MarkDownIcon from '@/components/technologies/MarkDownIcon';
 import MongoDB from '@/components/technologies/MongoDB';
-import NestJs from '@/components/technologies/NestJs';
 import NextJs from '@/components/technologies/NextJs';
 import NodeJs from '@/components/technologies/NodeJs';
 import PostgreSQL from '@/components/technologies/PostgreSQL';
@@ -10,6 +11,7 @@ import Prisma from '@/components/technologies/Prisma';
 import ReactIcon from '@/components/technologies/ReactIcon';
 import Shadcn from '@/components/technologies/Shadcn';
 import TailwindCss from '@/components/technologies/TailwindCss';
+import TriggerDev from '@/components/technologies/Trigger';
 import TypeScript from '@/components/technologies/TypeScript';
 import Vercel from '@/components/technologies/Vercel';
 import { Project } from '@/types/project';
@@ -29,18 +31,21 @@ export const projects: Project[] = [
     status: 'completed',
   },
   {
-    title: 'PostForge AI',
+    title: 'SkillTrail',
     description:
-      'Multi-platform AI-powered social media post scheduler on a Turborepo monorepo with NestJS backend, Next.js 15 frontend, and a type-safe Drizzle ORM + PostgreSQL data layer.',
-    image: '/project/postforge.png',
+      'AI-powered content assistant that helps users turn their work, learning, and discoveries into platform-specific social posts for LinkedIn and X, with AI-assisted editing, previews, publishing, and scheduling.',
+    image: '/project/skill-trail.png',
     technologies: [
       { name: 'Next.js', icon: <NextJs key="nextjs" /> },
-      { name: 'NestJS', icon: <NestJs key="nestjs" /> },
       { name: 'TypeScript', icon: <TypeScript key="typescript" /> },
       { name: 'PostgreSQL', icon: <PostgreSQL key="postgresql" /> },
-      { name: 'Node.js', icon: <NodeJs key="nodejs" /> },
+      { name: 'Drizzle ORM', icon: <Drizzle key="drizzle" /> },
+      { name: 'Better Auth', icon: <BetterAuth key="better-auth" /> },
+      { name: 'Trigger.dev', icon: <TriggerDev key="trigger-dev" /> },
+      { name: 'Vercel AI SDK', icon: <Vercel key="vercel " /> },
     ],
-    github: 'https://github.com/nanduxdev/post_forge_turbo',
+    github: 'https://github.com/nanduxdev/SkillTrail',
+    live: 'https://skilltrail.nandux.dev',
     status: 'in-development',
   },
   {

@@ -1,11 +1,43 @@
 Create a premium editorial-style technical blog cover image based on the blog content provided below.
 
-The visual style MUST remain consistent across all my blog covers.
+The attached reference image is the PRIMARY visual reference. Match its visual language, composition, background treatment, typography hierarchy, linework, lighting, and overall restraint as closely as possible.
 
-REFERENCE STYLE:
-Use the attached reference image as the primary visual-style reference.
+CRITICAL BACKGROUND REQUIREMENT:
+The background is NOT a plain white background with a simple grid.
 
-Overall aesthetic:
+It must reproduce the distinctive background treatment visible in the reference image:
+- A very subtle, full-canvas SQUARE GRID made from evenly spaced horizontal and vertical lines.
+- The grid must form clearly perceptible square cells across the entire canvas.
+- The grid lines should be extremely thin, pale gray, and low-contrast.
+- The squares must have extremely subtle shader-like tonal variation INSIDE the cells, creating the impression of a softly illuminated technical surface.
+- Use very faint, almost imperceptible gray/off-white gradients distributed across the grid cells.
+- The tonal variation should feel like soft ambient occlusion / shader lighting on a mathematical plane, NOT like a colorful gradient.
+- Some areas of the grid can be fractionally darker or lighter than others, producing subtle depth while remaining almost white.
+- The center and areas around the central artifact may have extremely subtle soft illumination.
+- The OUTER EDGES, especially all four corners, should gradually fade toward pure white.
+- Create a soft WHITE VIGNETTE around the perimeter, with the corners noticeably cleaner/brighter than the central canvas.
+- The grid should gently disappear into the white vignette toward the edges/corners rather than ending abruptly.
+- Preserve the square-grid structure even where it becomes extremely faint.
+- The background should resemble a sophisticated mathematical / CAD / engineering workspace rendered on an almost-white surface.
+
+Think of the background as:
+"an extremely subtle white technical grid plane with soft per-cell shader illumination and a white edge vignette."
+
+DO NOT interpret the background as:
+- a plain white background
+- a generic graph-paper grid
+- a blue grid
+- a checkerboard
+- a tiled floor
+- a strong 3D perspective grid
+- a colorful gradient
+- a textured paper background
+
+The square-cell shading is an ESSENTIAL part of the visual identity and must be clearly present when viewed at normal image size, while remaining subtle and elegant.
+
+---
+
+OVERALL AESTHETIC:
 - Minimalist
 - Elegant
 - Editorial
@@ -20,19 +52,14 @@ CANVAS:
 - Wide landscape composition
 - 16:9 aspect ratio
 - High resolution
-- White or extremely subtle off-white background
-
-BACKGROUND:
-- Very subtle thin mathematical/technical grid covering the entire canvas
-- Grid lines should be extremely light and understated
-- Add extremely subtle shader-like lighting / soft gradients in the background
-- The background must remain predominantly white
-- No dark background
-- No colorful gradient
-- No distracting textures
+- Predominantly white / extremely subtle off-white canvas
+- Flat, frontal editorial composition
 - No photographic environment
 
+---
+
 TYPOGRAPHY / HEADER:
+
 Place the blog title prominently in the upper portion of the image.
 
 The title should:
@@ -44,94 +71,94 @@ The title should:
 - Be centered horizontally
 - Occupy the upper-middle region
 - Use black or near-black typography
+- Have generous spacing and breathing room
 
 If the title contains multiple conceptual parts, create a clear hierarchy similar to:
 small introductory phrase
 +
 large bold main title
 
-However, DO NOT invent additional words.
+DO NOT invent, rewrite, shorten, paraphrase, or add words.
 
 The title must be reproduced EXACTLY from the provided blog title.
 
+---
+
 CENTRAL VISUAL:
+
 Analyze the blog content and identify its single most important technical concept.
 
 Create ONE elegant central diagram / artifact / conceptual illustration representing that concept.
 
 Do NOT simply draw a generic computer or generic programming illustration.
 
-Instead, choose a visual metaphor that is specifically relevant to the blog.
+Instead, choose a visual metaphor specifically relevant to the blog.
 
-Examples:
+The central artifact should feel like a sophisticated technical object or experimental engineering visualization rather than a conventional infographic.
 
-- Infrastructure / cloud → elegant architecture/network topology diagram
-- GPU / AI inference → GPU architecture, compute pipeline, tensor flow, or neural computation diagram
-- Docker → layered container architecture
-- Kubernetes → abstract cluster/network topology
-- SSH → terminal/network connection visualization
-- APIs → request/response flow architecture
-- Databases → elegant database/storage architecture
-- Monorepos → repository/package dependency graph
-- TypeScript → type relationships / compilation pipeline
-- Authentication → identity/authentication flow
-- Distributed systems → nodes communicating across a network
-- Algorithms → elegant geometric algorithm visualization
-- Binary search → search-space reduction diagram
-- Networking → packet/data-flow visualization
-- Web development → browser/server/request architecture
-- AI agents → agent/tool/model/environment interaction diagram
-
-The central illustration should feel like a sophisticated technical artifact rather than a conventional infographic.
+---
 
 VISUAL STYLE OF CENTRAL ARTIFACT:
+
 - Thin precision linework
 - Delicate wireframe geometry
 - Subtle technical blueprint aesthetic
-- Very light blue/lavender-gray linework similar to the reference image
+- Very light blue / lavender-gray linework similar to the reference
 - Fine mesh / wireframe details where appropriate
 - Elegant 3D perspective
 - Slightly surreal conceptual composition
 - Soft translucent elements
-- Small nodes, connectors, arrows, paths, particles, or geometric components when relevant
+- Small nodes, connectors, arrows, paths, particles, or geometric components only when relevant
 - Carefully balanced composition
 - Visually complex enough to be interesting but minimal enough to remain elegant
+- Soft, restrained depth
+- Primarily line-art / wireframe rather than solid objects
 
-The diagram should appear to be floating naturally in the whitespace beneath the title.
+The diagram should appear to float naturally within the whitespace beneath the title.
 
-IMPORTANT:
-Do NOT make the central visual look like a generic stock illustration.
-Do NOT use cartoon aesthetics.
-Do NOT use flat corporate vector art.
-Do NOT use excessive colors.
-Do NOT create a conventional presentation slide.
-Do NOT put large amounts of explanatory text inside the diagram.
+Do NOT make the central visual:
+- a generic stock illustration
+- cartoon-like
+- flat corporate vector art
+- overly colorful
+- a conventional presentation slide
+- visually cluttered
+- filled with large explanatory labels
 
-The central artifact should communicate the blog's idea visually without requiring labels everywhere.
+Do not place large amounts of explanatory text inside the diagram.
+
+---
 
 COMPOSITION:
-Maintain a large amount of negative space.
 
-Approximate layout:
+Maintain substantial negative space.
 
-                 BLOG TITLE
-          -----------------------
+Approximate visual hierarchy:
 
-                  ↓
+                    BLOG TITLE
+             -----------------------
 
-             CENTRAL
-       TECHNICAL ARTIFACT
-          / DIAGRAM /
-       CONCEPTUAL OBJECT
+                         ↓
 
-                  ↓
+                  CENTRAL
+             TECHNICAL ARTIFACT
+                / DIAGRAM /
+             CONCEPTUAL OBJECT
 
-        large amount of whitespace
+                         ↓
+
+              large white space
 
                                       @nanduxdev
 
+The central artifact should be vertically centered in the lower-middle portion of the composition without dominating the title.
+
+The background grid should remain visible around the artifact, helping integrate the object into the same technical visual system.
+
+---
 
 AUTHOR SIGNATURE:
+
 Place the exact text:
 
 @nanduxdev
@@ -155,20 +182,58 @@ Only display:
 
 The signature should be subtle and relatively small, but clearly visible.
 
+---
+
 COLOR PALETTE:
-- White / off-white background
-- Black typography
-- Very pale blue / lavender technical illustration
-- Extremely subtle gray grid
-- Extremely subtle shader lighting
 
-Keep the palette restrained and sophisticated.
+Primary:
+- White
+- Extremely subtle warm/cool off-white
+- Near-black typography
 
-LIGHTING:
-Use extremely soft studio-like illumination and subtle shader gradients.
-The central artifact may have delicate translucent highlights and depth, but it should remain primarily line-art / wireframe.
+Background:
+- Very pale neutral gray grid
+- Extremely faint gray shader variations inside grid cells
+- Pure-white edge/corner vignette
+
+Technical artifact:
+- Very pale blue
+- Soft lavender-gray
+- Extremely subtle translucent blue highlights
+
+Keep the entire palette restrained and sophisticated.
+
+No saturated colors.
+
+---
+
+LIGHTING AND BACKGROUND SHADING:
+
+The background lighting is an important part of the design.
+
+Create extremely soft, diffuse shader-like illumination across the square grid.
+
+The effect should resemble subtle light interacting with a flat mathematical surface:
+- gentle radial gradients
+- barely visible per-cell tonal differences
+- extremely soft transitions
+- subtle central illumination
+- faint depth around the technical artifact
+- white falloff toward the outer perimeter
+
+The four corners should have a soft white vignette.
+
+The vignette should NOT look like a dark photographic vignette. It is the opposite: the corners and outer edges become progressively WHITER and lower-contrast.
+
+The grid remains visible in the middle of the canvas but gradually fades into white near the edges.
+
+IMPORTANT:
+Do not replace this effect with a single smooth background gradient. The subtle square-by-square shader variation must remain perceptible beneath the grid.
+
+---
 
 QUALITY:
+
 - Extremely clean
 - Sharp typography
 - Precise geometry
@@ -177,20 +242,35 @@ QUALITY:
 - No clutter
 - No unnecessary decorative elements
 - No random icons
+- No photographic objects
 - No watermarks
+- No UI elements
 
-MOST IMPORTANT RULE:
-The image should look like it belongs to the SAME DESIGN SYSTEM as the provided reference image.
+MOST IMPORTANT VISUAL PRIORITY:
 
-Only the following should change from blog to blog:
-1. The title
+The final image must look like it belongs to the SAME DESIGN SYSTEM as the attached reference image.
+
+Keep these elements CONSISTENT across every blog cover:
+1. White editorial canvas
+2. Fine square technical grid
+3. Subtle shader-like tonal variation across the grid cells
+4. White vignette/fade at all outer edges and corners
+5. Black editorial serif typography
+6. Large intentional whitespace
+7. Pale blue/lavender wireframe central artifact
+8. Subtle technical lighting
+9. Small italic "@nanduxdev" signature
+
+Only these should change from blog to blog:
+1. The exact blog title
 2. The central technical concept / artifact
 
-The background, typography hierarchy, whitespace, subtle grid, restrained palette, and "@nanduxdev" signature should remain visually consistent.
+---
 
 BLOG TO ANALYZE:
 
 BLOG TITLE:
-
+[INSERT EXACT BLOG TITLE]
 
 BLOG CONTENT:
+[INSERT BLOG CONTENT]
