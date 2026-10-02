@@ -1,0 +1,237 @@
+---
+title: "NestJS + Turborepo + Shared DB: Raw TS vs Compiled Packages"
+description: "I hit MODULE_NOT_FOUND at runtime trying to share a Drizzle DB package across Nest and Next in a Turborepo monorepo. Here's the mental model I built around two valid patterns—and why I ended up on the compiled one."
+image: "/blog/turborepo.png"
+date: "2026-10-02"
+tags:
+  - NestJS
+  - Turborepo
+  - Drizzle
+  - TypeScript
+  - Monorepo
+  - Next.js
+isPublished: true
+---
+
+I was deep in setting up a Turborepo monorepo—`apps/api` (NestJS), `apps/web` (Next.js), and a shared `packages/database` for Drizzle schema and types.
+
+It looked clean on paper. Then I got this at runtime:
+
+```bash
+Error: Cannot find module '../../packages/database/src/index.ts'
+```
+
+Node was trying to `require()` a raw `.ts` file. That is not something Node can do on its own. I spent a few hours trying to fix my SWC config before I realized: I had the wrong mental model of how shared packages work in Turborepo.
+
+Here's the breakdown I wish I had before touching `tsconfig.json`.
+
+## The monorepo layout
+
+The typical setup looks like this:
+
+```
+├── apps
+│   ├── web        // Next.js frontend
+│   └── api        // NestJS backend
+└── packages
+    └── database   // shared Drizzle DB package
+```
+
+Both apps import `@repo/database`. The question is: **what does that package actually export—TypeScript source or compiled JS?**
+
+That question leads to two distinct patterns.
+
+## Pattern 1 – Raw TypeScript (JIT "internal packages")
+
+### The idea
+
+The shared package exports TypeScript source directly. No `dist/`. The consuming apps compile it as part of their own build.
+
+```json
+// packages/database/package.json
+{
+  "name": "@repo/database",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts",
+    "./types": "./src/types.ts"
+  }
+}
+```
+
+`main` and `exports` point to `.ts` files. No build step needed for the package itself.
+
+### How it works
+
+- Turborepo wires `@repo/database` via workspace symlinks.
+- **Next**: its bundler (webpack/Turbopack) compiles the raw TS. You add `transpilePackages: ["@repo/database"]` in `next.config.ts` and Next handles it transparently.
+- **Nest + SWC**: you map `@repo/database` via `tsconfig.json` `paths` to the actual source, and SWC compiles those `.ts` files alongside your app code into `dist/`.
+
+### Where I went wrong
+
+The SWC `paths` config tells TypeScript where to resolve the alias—but it does not automatically tell SWC to compile those files into the output. If the compiled output ends up doing `require('../../../../../packages/database/src/index.ts')`, Node fails because it sees a raw `.ts` path.
+
+I also ran into decorator issues:
+
+```typescript
+// TS1272: Parameter 'db' implicitly has an 'any' type (isolatedModules + emitDecoratorMetadata)
+@Module({ providers: [{ provide: "DB", useValue: db }] })
+export class DbModule {}
+```
+
+With `isolatedModules: true` and `emitDecoratorMetadata: true`, TypeScript becomes strict about any type information flowing through decorated classes. You end up needing `import type` everywhere in decorator signatures.
+
+### When it makes sense
+
+Raw TS packages shine when **all consumers are bundler-based** (Next, Vite, React Native). The bundler is always in the loop and handles the compilation. For a backend runtime like Node, you're fighting against the tool.
+
+## Pattern 2 – Compiled packages (`dist/`)
+
+### The idea
+
+The shared package is a proper compiled library. Source in `src/`, build step with `tsc`, output in `dist/`.
+
+```json
+// packages/database/package.json
+{
+  "name": "@repo/database",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./schema": {
+      "types": "./dist/schema/index.d.ts",
+      "default": "./dist/schema/index.js"
+    },
+    "./types": { "types": "./dist/types.d.ts", "default": "./dist/types.js" }
+  },
+  "scripts": { "build": "tsc -p tsconfig.build.json" }
+}
+```
+
+And the tsconfig for that package:
+
+```json
+// packages/database/tsconfig.build.json
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "module": "commonjs",
+    "target": "ES2020",
+    "strict": true
+  },
+  "include": ["src"]
+}
+```
+
+### How Turborepo wires the build order
+
+Turborepo's `pipeline` config ensures `packages/database` compiles before any app tries to build:
+
+```json
+// turbo.json
+{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "build": { "dependsOn": ["^build"], "outputs": [".next/**", "dist/**"] },
+    "dev": { "cache": false, "persistent": true }
+  }
+}
+```
+
+`"dependsOn": ["^build"]` means: before building me, build all my workspace dependencies first. So `packages/database` always has fresh `dist/` output before `apps/api` or `apps/web` compile.
+
+### Importing in NestJS
+
+No `paths` mapping needed in `tsconfig.json`—`@repo/database` is treated like any other npm dependency:
+
+```typescript
+// apps/api/src/database/db.module.ts
+import { Module } from "@nestjs/common";
+import { db } from "@repo/database"; // compiled JS at runtime
+import type { User, NewUser } from "@repo/database/types"; // .d.ts for type checking
+
+@Module({
+  providers: [{ provide: "DB", useValue: db }],
+  exports: ["DB"],
+})
+export class DbModule {}
+```
+
+Node loads `node_modules/@repo/database/dist/index.js`—pure JS. No TS anywhere in the require chain at runtime.
+
+### Importing in Next.js
+
+```typescript
+// apps/web/next.config.ts
+import type { NextConfig } from "next";
+const nextConfig: NextConfig = { transpilePackages: ["@repo/database"] };
+export default nextConfig;
+```
+
+```typescript
+// apps/web/src/components/UserRow.tsx
+import type { User } from "@repo/database/types";
+
+function UserRow({ user }: { user: User }) {
+  // ...
+}
+```
+
+Next picks up types from `dist/types.d.ts` and the bundler handles the JS if it needs to run client-side.
+
+## Side-by-side comparison
+
+| Dimension | Raw TS / JIT | Compiled dist/ |
+|---|---|---|
+| **Package build step** | None | `tsc` per change |
+| **Node safe at runtime** | Fragile—needs correct SWC config | ✅ Always |
+| **Dev loop speed** | Fast (no rebuild) | Slightly slower if schema changes often |
+| **Works for Next** | ✅ Yes | ✅ Yes |
+| **Works for Nest** | Needs careful SWC + paths setup | ✅ Yes, trivially |
+| **Decorator compatibility** | Can hit TS1272 errors | No issues |
+| **Teams / scale** | Gets confusing | Clear build boundaries |
+
+## Common mistakes I made
+
+**Mistake 1: Adding `paths` and thinking that's enough for SWC**
+
+```json
+// tsconfig.json
+"paths": {
+  "@repo/database": ["../../packages/database/src/index.ts"]
+}
+```
+
+This tells TypeScript where to resolve the type. It does not tell SWC to compile those files as part of the app build. SWC needs `baseUrl` + proper loader config, and the output directory must contain the compiled result—not a path reference back to raw `.ts`.
+
+**Mistake 2: Mixing `moduleResolution: "bundler"` into a NestJS tsconfig**
+
+`"bundler"` resolution mode assumes a bundler is in the loop. Node doesn't work like that. NestJS apps with a Node runtime should use `"node16"` or `"nodenext"` module resolution, not `"bundler"`.
+
+**Mistake 3: Not running `tsc --watch` in the DB package during dev**
+
+If you're on the compiled pattern and you edit your schema, the app will still import the stale `dist/`. Either run `tsc --watch` in `packages/database` during development, or configure a Turborepo `dev` pipeline that watches it.
+
+## What I'd do differently next time
+
+I'd choose the compiled pattern from the start for any Turborepo project that includes a NestJS backend. The extra build step is a small price for clarity—you always know exactly what Node is loading at runtime, decorator metadata works out of the box, and you don't need to maintain a fragile SWC paths config.
+
+For a Next-only monorepo, raw TS packages are perfectly fine. The bundler handles it well and the zero-build-step DX is genuinely nice.
+
+> The key insight: the error is not a config bug to fix—it's the runtime telling you that Node cannot load `.ts`. Once that clicked, the right pattern was obvious.
+
+If you're hitting `MODULE_NOT_FOUND` on a workspace package in NestJS, check whether `main` in that package's `package.json` points to a `.ts` file. If it does, you need to either compile that package or fix your SWC config so it includes that file in the compilation graph.
+
+## Further reading
+
+- [Turborepo: TypeScript guide](https://turborepo.dev/docs/guides/tools/typescript)
+- [NestJS: SWC recipe](https://docs.nestjs.com/recipes/swc)
+- [Next.js: transpilePackages](https://nextjs.org/docs/app/api-reference/config/next-config-js/transpilePackages)
+- [TypeScript: moduleResolution option](https://www.typescriptlang.org/docs/handbook/modules/guides/choosing-compiler-options.html)

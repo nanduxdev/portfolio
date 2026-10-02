@@ -5,6 +5,7 @@ import { BlogFrontmatter } from '@/types/blog';
 import rehypeHighlight from '@shikijs/rehype';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import Image from 'next/image';
+import remarkGfm from 'remark-gfm';
 
 import Calender from '../svgs/Calender';
 import { BlogComponents } from './BlogComponents';
@@ -71,7 +72,7 @@ export function BlogContent({ frontmatter, content }: BlogContentProps) {
           components={BlogComponents}
           options={{
             mdxOptions: {
-              remarkPlugins: [remarkMermaidDiagram],
+              remarkPlugins: [remarkGfm, remarkMermaidDiagram],
               rehypePlugins: [
                 [
                   rehypeHighlight,
