@@ -119,7 +119,7 @@ Both are open source. Read the READMEs first, since these projects move fast and
 
 **1. Install and start**
 
-```
+```bash
 npm i -g omniroute
 omniroute
 ```
@@ -128,7 +128,7 @@ The server boots on `localhost:20128`. Open the dashboard there to connect provi
 
 **2. Smoke test (OpenAI-compatible, note the `/v1`)**
 
-```
+```bash
 curl http://localhost:20128/v1/chat/completions \
   -H "Authorization: Bearer <OMNIROUTE_KEY>" \
   -H "Content-Type: application/json" \
@@ -137,7 +137,7 @@ curl http://localhost:20128/v1/chat/completions \
 
 **3. Claude Code (no `/v1` in the base URL)**
 
-```
+```bash
 omniroute launch
 # or, with an explicit model:
 omniroute run claude --model auto/coding
@@ -147,7 +147,7 @@ omniroute run claude --model auto/coding
 
 **4. Cursor**
 
-```
+```bash
 omniroute setup-cursor
 ```
 
@@ -157,7 +157,7 @@ It prints the settings: set the OpenAI base URL to `http://localhost:20128/v1` a
 
 **1. Install (Docker required)**
 
-```
+```bash
 curl -fsSL https://freellmapi.co/install.sh | bash
 ```
 
@@ -165,7 +165,7 @@ This sets up `~/freellmapi` and starts a container. There is **no global `freell
 
 **2. Check it's healthy**
 
-```
+```bash
 cd ~/freellmapi
 docker compose ps        # should say Up ... (healthy)
 docker compose logs -f freellmapi
@@ -177,7 +177,7 @@ Open `http://localhost:3001`, add provider keys on the **Keys** page, reorder th
 
 **4. Connect Claude Code (root URL, no `/v1`)**
 
-```
+```bash
 npx freellmapi setup-claude --url http://localhost:3001
 ```
 
