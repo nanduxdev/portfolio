@@ -1,0 +1,209 @@
+---
+title: "The Truth Behind 7.4 Billion (FreeLLMAPI) + 1.62 Billion (OmniRoute) Free Tokens"
+description: "I ran Claude Code on FreeLLMAPI and OmniRoute's free-token pools after trying local LLMs and rented GPUs. Here's what the headline numbers really mean, why they don't give you a real coding agent, and the setup guide if you want to try anyway."
+image: "/blog/free-tokens-truth.png"
+date: "2026-10-03"
+tags:
+  - LLM Gateway
+  - Claude Code
+  - OmniRoute
+  - FreeLLMAPI
+  - AI Coding Agents
+  - DevOps
+isPublished: true
+---
+
+> **To be honest, from experience: this setup won't give you real coding-agent development.** A lot of the free models have small context windows. Your harness (Claude Code) then tries to compact the context every couple of chat messages, and eventually you hit this:
+>
+> `Autocompact is thrashing: the context refilled to the limit within 3 turns of the previous compact, 3 times in a row`
+>
+> If you only read one thing in this post, read that. The rest explains why, and gives you the setup guide if you want to try it yourself anyway.
+
+My YouTube feed has been full of thumbnails like these: **"1.62 BILLION Free Tokens per Month"**, **"7.4B Free Tokens/day"**, "Claude Code for free, including Anthropic models."
+
+I clicked, because I've been chasing this exact dream for a while.
+
+## Why I Was Susceptible to This
+
+I've tried to get coding agents running for free with every workaround I could find:
+
+1. **Local open-source LLMs on my M1.** My RAM wasn't enough. Models that fit were too weak, and models that were good enough didn't fit.
+2. **Renting GPUs on Vast.ai.** That fixed the memory problem and created a new one. I was suddenly doing MLOps: picking instances, setting up inference servers, wiring endpoints, and watching a meter run.
+3. **Unified free-token gateways.** Which brings me to FreeLLMAPI and OmniRoute.
+
+Each step felt like progress, and each one ended at the same wall. I'm writing this one down so you can skip the wall.
+
+## The Numbers: What They Actually Are
+
+Both repos are real, MIT-licensed, and honest in their READMEs. The thumbnails are the part that blurs things. Here's what the READMEs say:
+
+| | **FreeLLMAPI** | **OmniRoute** |
+|---|---|---|
+| Headline | ~7.4B tokens/month | ~1.62B tokens/month |
+| Providers | 34 free providers, 635 free endpoints | 357+ providers, 150+ with free tiers |
+| What the number is | Sum of *listed* free-tier capacity | Pool-deduplicated sum of published monthly budgets |
+| Default port | `3001` | `20128` |
+
+A few details change how you should read them.
+
+### These are sums of many small buckets, not one balance
+
+Nobody gives you 1.62B tokens. OmniRoute's own README explains that the headline comes from 17 recurring pools with a published monthly budget, plus five per-model Groq caps, with shared pools counted once. In the breakdown they show, Mistral alone is about **1.0B of the 1.62B**, roughly 60%. Nara (210M), LLM7 (150M), and xKiro (150M) follow, and the rest are small.
+
+So the real question isn't "do I have 1.62B tokens?" It's "do I have a *good model with a big context window* inside the pool that's actually available to me right now?"
+
+### FreeLLMAPI's number is "listed capacity"
+
+FreeLLMAPI's README calls its figure "listed free-tier capacity" across 474 model families. Its own **Limitations** section says there are no frontier models, latency varies, there's no SLA, and the effective intelligence of the endpoint dips late in the day as top models hit their daily caps, then resets at UTC midnight. The disclaimer is also explicit that the project is for personal experimentation, not production.
+
+### "Per month" vs "per day"
+
+Look at the thumbnails again. One says 1.62B per month. Another says 7.4B per **day**. FreeLLMAPI's README says 7.4B per **month**. Thumbnails round up. Check the repo before you believe the title.
+
+### Free doesn't mean available to you
+
+OmniRoute marks some pools as gated behind regional identity checks and keeps them out of the headline total. I ran into this myself. One provider was labeled "email signup ok" in the catalog, but the actual login page I got was a Chinese phone-verification screen. Catalog metadata and real onboarding can differ.
+
+> Free-tier catalog says "free." Your account, your region, and your phone number get a vote.
+
+## Why Billions of Tokens Don't Make a Coding Agent
+
+Token count measures *volume*. A coding agent is limited by *context window* and *model quality*.
+
+An agent like Claude Code doesn't send one prompt. Every turn re-sends the conversation: system prompt, tool definitions, file contents, previous tool output. Illustrative numbers: if a session carries 80k tokens of context for 30 turns, that's about 2.4M tokens for one task. A 1.62B pool sounds endless until you realize the real constraint is whether the model behind each request can *hold* that 80k at all.
+
+Here's the failure chain I kept hitting:
+
+| Step | What happens |
+|------|--------------|
+| 1 | Router picks a free model with a small context window |
+| 2 | Claude Code's context fills up quickly (files + tool output) |
+| 3 | Harness auto-compacts and summarizes the history |
+| 4 | Next few turns refill the window, because the model forgets and re-reads files |
+| 5 | Compact again, and again |
+| 6 | `Autocompact is thrashing`, and the session is effectively dead |
+
+On top of that:
+
+- **The router can switch models mid-session.** A different model with a different style and a different context limit appears halfway through a refactor.
+- **Cooldowns and rate limits.** I got `429 ... all credentials ... are cooling down` and a `402` from a router that quietly picked a paid provider. (`auto` does **not** mean "free only.")
+- **Weaker tool use.** Agents depend on reliable tool-calling. Smaller free models fumble it.
+
+For learning, scripts, and chat-style Q&A, this works fine. For long-running agentic work on a real codebase, it doesn't.
+
+## What the Gateways Are Actually Good For
+
+I don't want to be only negative. The gateway pattern is genuinely useful, even if the free pool isn't what the thumbnail promises.
+
+```
+Cursor ────────────┐
+Claude Code ───────┼──> Gateway ──> Providers ──> Models
+Other agents ──────┘
+```
+
+- **One endpoint, one unified key.** Your tools never hold provider keys.
+- **Fallback and routing.** If one provider is rate-limited, the request moves on.
+- **Observability.** Request logs show which provider and model actually served a request.
+- **Swap providers without touching your agents.** If you later add a paid key, nothing else changes.
+
+That last point is the best use: put a paid key *in* the gateway, and keep free pools as overflow.
+
+## Setup Guide (If You Want to Try It Yourself)
+
+Both are open source. Read the READMEs first, since these projects move fast and the commands below may change.
+
+- **OmniRoute:** [github.com/diegosouzapw/OmniRoute](https://github.com/diegosouzapw/OmniRoute)
+- **FreeLLMAPI:** [github.com/tashfeenahmed/freellmapi](https://github.com/tashfeenahmed/freellmapi)
+
+### Option A: OmniRoute (port 20128)
+
+**1. Install and start**
+
+```
+npm i -g omniroute
+omniroute
+```
+
+The server boots on `localhost:20128`. Open the dashboard there to connect providers and create an API key.
+
+**2. Smoke test (OpenAI-compatible, note the `/v1`)**
+
+```
+curl http://localhost:20128/v1/chat/completions \
+  -H "Authorization: Bearer <OMNIROUTE_KEY>" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "auto/coding", "messages": [{"role": "user", "content": "Explain binary search."}]}'
+```
+
+**3. Claude Code (no `/v1` in the base URL)**
+
+```
+omniroute launch
+# or, with an explicit model:
+omniroute run claude --model auto/coding
+```
+
+`launch` injects `ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN`, and `ANTHROPIC_MODEL` into the Claude Code process only, so nothing is written into your global config.
+
+**4. Cursor**
+
+```
+omniroute setup-cursor
+```
+
+It prints the settings: set the OpenAI base URL to `http://localhost:20128/v1` and paste your OmniRoute key. On Cursor's free plan you'll be limited to **Auto**, so named models won't show.
+
+### Option B: FreeLLMAPI (port 3001)
+
+**1. Install (Docker required)**
+
+```
+curl -fsSL https://freellmapi.co/install.sh | bash
+```
+
+This sets up `~/freellmapi` and starts a container. There is **no global `freellmapi` command** from this installer, so `freellmapi launch` gives `command not found`. Use `npx` instead.
+
+**2. Check it's healthy**
+
+```
+cd ~/freellmapi
+docker compose ps        # should say Up ... (healthy)
+docker compose logs -f freellmapi
+```
+
+**3. Add keys**
+
+Open `http://localhost:3001`, add provider keys on the **Keys** page, reorder the **Fallback Chain**, and copy the unified key (`freellmapi-...`).
+
+**4. Connect Claude Code (root URL, no `/v1`)**
+
+```
+npx freellmapi setup-claude --url http://localhost:3001
+```
+
+It prompts for the unified key, backs up and edits `~/.claude/settings.json`. If you'd rather keep credentials out of config files, the README also documents `npx freellmapi launch`.
+
+### Gotchas That Cost Me Time
+
+| Symptom | What it really means |
+|---------|----------------------|
+| `Invalid API key` from `curl localhost:3001/v1/models` | Server is fine, you forgot the `Authorization: Bearer` header |
+| `command not found: freellmapi` | Docker install has no global CLI, use `npx freellmapi ...` |
+| Claude Code hits a wrong path | You added `/v1` to the base URL. Claude Code wants the root |
+| `402` from `model: "auto"` | `auto` can pick paid providers like OpenRouter |
+| `429 ... cooling down` | Upstream rate limit, not a gateway failure |
+| Old Ollama/OpenRouter env vars in `~/.claude/settings.json` | They fight with the gateway's env. Clean them out first |
+
+> Before you add any provider: read its terms. Both READMEs point out that your account's terms still apply when traffic goes through a proxy.
+
+## What I'd Do Differently Next Time
+
+- **Check context window size before token count.** A 128k-window model with a small quota beats a 4B-token pool of small-window models for agent work.
+- **Use free pools for what they're good at:** quick questions, small scripts, classification, and summarizing, not multi-file refactors.
+- **Keep one paid, large-context model as the default** and let free models absorb overflow.
+- **Create one gateway API key per tool**, so request logs tell you which agent burned what.
+- **Read the Limitations section of the README before the thumbnail.**
+
+The six-month journey from local LLMs to rented GPUs to free-token gateways taught me one thing: the cost I was avoiding never disappeared. It moved from money to RAM, then to my time, then to context-window thrash.
+
+If you've found a free setup that holds up for real agentic work, I'd like to hear what your model and context window look like. And if this saved you a weekend, send it to someone stuck on the same thing.

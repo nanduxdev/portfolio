@@ -1,8 +1,8 @@
 ---
-title: "I Gave Every AI Agent in My Repo the Same Spec-Driven Brain"
-description: "How I built a Kiro-style spec workflow manually across Cursor, Antigravity, and Claude Code — same protocol, same slash commands, same gates, three different agents reading from one source of truth."
-image: "/blog/spec-driven.png"
-date: "2026-10-03"
+title: 'I Gave Every AI Agent in My Repo the Same Spec-Driven Brain'
+description: 'How I built a Kiro-style spec workflow manually across Cursor, Antigravity, and Claude Code — same protocol, same slash commands, same gates, three different agents reading from one source of truth.'
+image: '/blog/spec-driven.png'
+date: '2026-10-03'
 tags:
   - AI Agents
   - Developer Tooling
@@ -55,7 +55,7 @@ That's the thesis I borrowed from Kiro and implemented myself.
 
 Everything lives under `.specs/` at the repo root:
 
-```text
+```
 .specs/
   WORKFLOW.md                      ← the agent protocol (this is the brain)
   features/
@@ -72,7 +72,7 @@ Everything lives under `.specs/` at the repo root:
 
 Separately, the product and domain authority stay in `docs/`:
 
-```text
+```
 docs/
   product.md        ← what SkillTrail is, V1 scope
   domain.md         ← domain concepts + numbered invariants (INVARIANT-*)
@@ -83,7 +83,7 @@ docs/
 The separation matters:
 
 - **`docs/`** tells the agent what SkillTrail is — the durable product and domain knowledge
-- **`.specs/`** tells the agent what we're changing *right now* — feature-specific context
+- **`.specs/`** tells the agent what we're changing _right now_ — feature-specific context
 
 Mixing them would mean every feature spec drags in everything. Keeping them separate means the agent reads the right authority for the right question.
 
@@ -95,7 +95,7 @@ The heart of the whole system is `.specs/WORKFLOW.md`.
 
 It opens with this:
 
-> *"Read this file in full before starting or resuming work on any feature or bugfix. Do not skip steps."*
+> _"Read this file in full before starting or resuming work on any feature or bugfix. Do not skip steps."_
 
 And it defines a reading order before writing anything:
 
@@ -106,7 +106,7 @@ And it defines a reading order before writing anything:
 
 That last point is enforced explicitly:
 
-> *"Never invent tables, columns, indexes, routes, or config not present in the above. If something needed for a spec isn't in the repo, say so explicitly in the relevant spec file rather than guessing."*
+> _"Never invent tables, columns, indexes, routes, or config not present in the above. If something needed for a spec isn't in the repo, say so explicitly in the relevant spec file rather than guessing."_
 
 That single rule has prevented a lot of hallucinated schema assumptions.
 
@@ -120,7 +120,7 @@ The workflow defines six steps. No step can start until the previous one's gate 
 
 EARS stands for Easy Approach to Requirements Syntax. Every requirement follows this pattern:
 
-```text
+```
 WHEN <condition>
 THEN the system SHALL <behavior>
 [AND SHALL NOT <behavior>]
@@ -151,9 +151,9 @@ The agent reads `requirements.md` against both `docs/domain.md` and `docs/archit
 
 That ambiguity rule is worth quoting directly:
 
-> *Low-risk implementation ambiguity (naming, file layout, minor UX detail): pick the simplest reasonable interpretation, state the assumption inline, keep going.*
+> _Low-risk implementation ambiguity (naming, file layout, minor UX detail): pick the simplest reasonable interpretation, state the assumption inline, keep going._
 >
-> *Ambiguity touching domain behavior, security, database structure, publication behavior, AI review semantics, or architecture: stop. Write it into `analysis.md` under "Ambiguities requiring a decision" and wait for the developer, rather than assuming.*
+> _Ambiguity touching domain behavior, security, database structure, publication behavior, AI review semantics, or architecture: stop. Write it into `analysis.md` under "Ambiguities requiring a decision" and wait for the developer, rather than assuming._
 
 That distinction between "just pick something" and "stop and ask" has been the most practically useful part of the whole protocol. The agent isn't expected to never make decisions — it's expected to know which decisions it shouldn't make unilaterally.
 
@@ -176,26 +176,30 @@ For example, for a feature that needs a domain service:
 
 ```markdown
 ### FACT
+
 AI calls go through the internal AiProvider interface (architecture.md).
 
 ### INFERENCE
+
 Draft generation belongs in lib/domain, not directly inside a Route Handler
 (architecture.md domain layer rule).
 
 ### RECOMMENDATION
+
 Add a generateDraftProposal() function to the relevant domain module.
 
 ### UNKNOWN
+
 The exact existing file path for this module. Must be inspected, not assumed.
 ```
 
-I don't want: *"I'll create `services/draft-generator.ts` because that seems right."*
+I don't want: _"I'll create `services/draft-generator.ts` because that seems right."_
 
-I want: *"I need to inspect the repo before naming a file."*
+I want: _"I need to inspect the repo before naming a file."_
 
 The design step also has the one gate in the whole protocol that **requires a human**:
 
-> *Do not generate `tasks.md` until Schema Impact is `none`, or has been shown to the developer and explicitly accepted.*
+> _Do not generate `tasks.md` until Schema Impact is `none`, or has been shown to the developer and explicitly accepted._
 
 Schema changes are not to be recommended casually. If `design.md` has a schema impact section, it blocks until I say it's approved.
 
@@ -220,21 +224,27 @@ Bugs get a different starting point. Not requirements — a structured analysis:
 
 ```markdown
 ## Reproduction
+
 Exact steps.
 
 ## Current behavior (defect)
+
 What happens now.
 
 ## Expected behavior (EARS)
+
 WHEN <condition> THEN the system SHALL <correct behavior>
 
 ## Must not change (regression guard, EARS)
+
 WHEN <condition> THEN the system SHALL CONTINUE TO <existing behavior>
 
 ## Root cause
+
 (fill in once actually found — don't guess before investigating)
 
 ## Schema impact
+
 none | ⚠ see note
 ```
 
@@ -243,31 +253,33 @@ The root cause section cannot be filled in speculatively. The agent investigates
 Then comes a property test using `fast-check` encoding both the fix and the "must not change" clause:
 
 ```ts
-import { test } from "@fast-check/vitest";
-import fc from "fast-check";
+import { test } from '@fast-check/vitest';
+import fc from 'fast-check';
 
-test.prop([/* domain shape generators */])(
-  "draft-proposal-isolation: AI proposal never silently overwrites Draft",
+test.prop([
+  /* domain shape generators */
+])(
+  'draft-proposal-isolation: AI proposal never silently overwrites Draft',
   (input) => {
     // assert the fix
     // assert the must-not-change clause in the same test
-  }
+  },
 );
 ```
 
 One rule I particularly like: the test must be shown to fail on the pre-fix code before it counts as a regression guard. A test that only ever passes isn't proving anything.
 
-And `fast-check` is not added silently. The workflow explicitly says: *"The first time this step runs, ask the developer to approve adding `fast-check` as a dev dependency."*
+And `fast-check` is not added silently. The workflow explicitly says: _"The first time this step runs, ask the developer to approve adding `fast-check` as a dev dependency."_
 
 ### Step 6 — Test Strategy
 
 The protocol closes with an explicit test pyramid:
 
-| Layer | Use for | Where |
-|---|---|---|
-| **Unit (majority)** | Every domain function: happy path, validation, edge cases | `tests/unit/` |
-| **Property (targeted)** | Domain invariants, schema uniqueness, ownership rules | `tests/property/` |
-| **E2E (small, curated)** | Fixed list of critical user journeys — not every flow | `e2e/` |
+| Layer                    | Use for                                                   | Where             |
+| ------------------------ | --------------------------------------------------------- | ----------------- |
+| **Unit (majority)**      | Every domain function: happy path, validation, edge cases | `tests/unit/`     |
+| **Property (targeted)**  | Domain invariants, schema uniqueness, ownership rules     | `tests/property/` |
+| **E2E (small, curated)** | Fixed list of critical user journeys — not every flow     | `e2e/`            |
 
 Property test candidates are enumerated by invariant ID. E2E candidate journeys are a short, named list — not "cover everything." Heavy E2E is expensive and slow, and the workflow says so directly.
 
@@ -295,7 +307,7 @@ Rules in `.claude/rules/` load automatically every session — no `alwaysApply` 
 
 Skills live in `.claude/skills/<name>/SKILL.md`, and the directory name becomes the slash command. So:
 
-```text
+```
 .claude/skills/
   spec-requirements/SKILL.md   → /spec-requirements
   spec-analyze/SKILL.md        → /spec-analyze
@@ -316,14 +328,14 @@ The root `CLAUDE.md` imports `AGENTS.md` (so all the SkillTrail rules apply) and
 
 Read `.specs/WORKFLOW.md` before starting any feature or bugfix.
 
-| Command               | Step                                          |
-|-----------------------|-----------------------------------------------|
-| /spec-requirements    | Step 1 — requirements.md in EARS syntax       |
-| /spec-analyze         | Step 2 — analysis.md (contradictions, gaps)   |
-| /spec-design          | Step 3 — design.md with Schema Impact gate    |
-| /spec-tasks           | Step 4 — tasks.md as ordered checklist        |
-| /spec-implement       | Step 5 — implement, test, check off boxes     |
-| /spec-bugfix          | Bugfix — analysis.md + property test          |
+| Command            | Step                                        |
+| ------------------ | ------------------------------------------- |
+| /spec-requirements | Step 1 — requirements.md in EARS syntax     |
+| /spec-analyze      | Step 2 — analysis.md (contradictions, gaps) |
+| /spec-design       | Step 3 — design.md with Schema Impact gate  |
+| /spec-tasks        | Step 4 — tasks.md as ordered checklist      |
+| /spec-implement    | Step 5 — implement, test, check off boxes   |
+| /spec-bugfix       | Bugfix — analysis.md + property test        |
 ```
 
 ### The `domain-logic.md` Rule
@@ -332,7 +344,7 @@ One rule I wired up for all three agents that's worth calling out separately: do
 
 The rule specifies what a Route Handler is and isn't allowed to do. It ends with:
 
-```text
+```
 HTTP Route Handler
 → lib/domain
 → database / external services
@@ -340,7 +352,7 @@ HTTP Route Handler
 
 Not:
 
-```text
+```
 HTTP Route Handler
 → database
 → business logic in the route
@@ -356,13 +368,13 @@ The rule exists in `.agents/rules/domain-logic.md`, `.claude/rules/domain-logic.
 
 **Before:**
 
-```text
+```
 idea → chat → agent writes code → debug → discover architectural conflict → rewrite
 ```
 
 **Now:**
 
-```text
+```
 idea → /spec-requirements → /spec-analyze → /spec-design
      → schema impact gate (human) → /spec-tasks → /spec-implement → tests pass
 ```
@@ -385,7 +397,7 @@ The repository needs to be.
 
 You don't need a special IDE for this. You need:
 
-```text
+```
 .specs/
   WORKFLOW.md        ← the protocol
   features/
@@ -406,4 +418,4 @@ That step alone will probably catch something you would have discovered halfway 
 
 ---
 
-*SkillTrail is a developer tool for turning work into stories — built solo, with AI agents, following the protocol described above. The spec files and workflow are all in the public repo at https://github.com/nanduxdev/SkillTrail. Don't forget to give a Star if you like my work.*
+_SkillTrail is a developer tool for turning work into stories — built solo, with AI agents, following the protocol described above. The spec files and workflow are all in the public repo at https://github.com/nanduxdev/SkillTrail. Don't forget to give a Star if you like my work._

@@ -6,6 +6,7 @@ CRITICAL BACKGROUND REQUIREMENT:
 The background is NOT a plain white background with a simple grid.
 
 It must reproduce the distinctive background treatment visible in the reference image:
+
 - A very subtle, full-canvas SQUARE GRID made from evenly spaced horizontal and vertical lines.
 - The grid must form clearly perceptible square cells across the entire canvas.
 - The grid lines should be extremely thin, pale gray, and low-contrast.
@@ -24,6 +25,7 @@ Think of the background as:
 "an extremely subtle white technical grid plane with soft per-cell shader illumination and a white edge vignette."
 
 DO NOT interpret the background as:
+
 - a plain white background
 - a generic graph-paper grid
 - a blue grid
@@ -38,6 +40,7 @@ The square-cell shading is an ESSENTIAL part of the visual identity and must be 
 ---
 
 OVERALL AESTHETIC:
+
 - Minimalist
 - Elegant
 - Editorial
@@ -49,6 +52,7 @@ OVERALL AESTHETIC:
 - Similar visual language to high-end technical documentation, architecture diagrams, and experimental engineering sketches
 
 CANVAS:
+
 - Wide landscape composition
 - 16:9 aspect ratio
 - High resolution
@@ -63,6 +67,7 @@ TYPOGRAPHY / HEADER:
 Place the blog title prominently in the upper portion of the image.
 
 The title should:
+
 - Be large
 - Be elegant
 - Be highly readable
@@ -75,8 +80,8 @@ The title should:
 
 If the title contains multiple conceptual parts, create a clear hierarchy similar to:
 small introductory phrase
-+
-large bold main title
+
+- large bold main title
 
 DO NOT invent, rewrite, shorten, paraphrase, or add words.
 
@@ -117,6 +122,7 @@ VISUAL STYLE OF CENTRAL ARTIFACT:
 The diagram should appear to float naturally within the whitespace beneath the title.
 
 Do NOT make the central visual:
+
 - a generic stock illustration
 - cartoon-like
 - flat corporate vector art
@@ -170,6 +176,7 @@ This author signature MUST remain exactly "@nanduxdev" for every image.
 Use a small elegant italic/editorial serif style.
 
 Do NOT add:
+
 - "by"
 - "written by"
 - social media icons
@@ -187,16 +194,19 @@ The signature should be subtle and relatively small, but clearly visible.
 COLOR PALETTE:
 
 Primary:
+
 - White
 - Extremely subtle warm/cool off-white
 - Near-black typography
 
 Background:
+
 - Very pale neutral gray grid
 - Extremely faint gray shader variations inside grid cells
 - Pure-white edge/corner vignette
 
 Technical artifact:
+
 - Very pale blue
 - Soft lavender-gray
 - Extremely subtle translucent blue highlights
@@ -214,6 +224,7 @@ The background lighting is an important part of the design.
 Create extremely soft, diffuse shader-like illumination across the square grid.
 
 The effect should resemble subtle light interacting with a flat mathematical surface:
+
 - gentle radial gradients
 - barely visible per-cell tonal differences
 - extremely soft transitions
@@ -251,6 +262,7 @@ MOST IMPORTANT VISUAL PRIORITY:
 The final image must look like it belongs to the SAME DESIGN SYSTEM as the attached reference image.
 
 Keep these elements CONSISTENT across every blog cover:
+
 1. White editorial canvas
 2. Fine square technical grid
 3. Subtle shader-like tonal variation across the grid cells
@@ -262,6 +274,7 @@ Keep these elements CONSISTENT across every blog cover:
 9. Small italic "@nanduxdev" signature
 
 Only these should change from blog to blog:
+
 1. The exact blog title
 2. The central technical concept / artifact
 

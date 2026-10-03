@@ -1,8 +1,8 @@
 ---
-title: "Why Vercel Prefers CNAME: The DNS Record Types That Finally Made Deployment Click"
-description: "A practical breakdown of A, AAAA, CNAME, NS, SOA, MX, and TXT records—and why Vercel uses a CNAME target for www while the apex domain needs an A record."
-image: "/blog/DNS-vercel-deployment.png"
-date: "2026-08-23"
+title: 'Why Vercel Prefers CNAME: The DNS Record Types That Finally Made Deployment Click'
+description: 'A practical breakdown of A, AAAA, CNAME, NS, SOA, MX, and TXT records—and why Vercel uses a CNAME target for www while the apex domain needs an A record.'
+image: '/blog/DNS-vercel-deployment.png'
+date: '2026-08-23'
 tags:
   - DNS
   - Vercel
@@ -16,7 +16,7 @@ I was setting up `nandux.dev` on Vercel and expected the process to be simple: b
 
 Then Vercel showed me an A record for the root domain, a CNAME record for `www`, a recommendation to redirect the apex domain to `www`, and a project-specific hostname that looked like this:
 
-```text
+```
 0f35b3bdba90d866.vercel-dns-017.com.
 ```
 
@@ -32,24 +32,24 @@ This is the breakdown I wish I had before touching the GoDaddy DNS dashboard.
 
 I wanted a clean public portfolio URL:
 
-```text
+```
 https://nandux.dev
 ```
 
 But I also wanted visitors who type the `www` version to reach the same site:
 
-```text
+```
 https://www.nandux.dev
 ```
 
 The final DNS shape looks like this:
 
-```text
+```
 nandux.dev       → A record     → Vercel edge IP
 www.nandux.dev   → CNAME record → Vercel-managed hostname
 ```
 
-Both routes reach Vercel. The difference is *how* DNS gets there.
+Both routes reach Vercel. The difference is _how_ DNS gets there.
 
 ## DNS before record types
 
@@ -57,7 +57,7 @@ DNS stands for Domain Name System. When I type a URL in the browser, the browser
 
 A DNS lookup answers questions such as:
 
-```text
+```
 Where is nandux.dev?
 Where should email for nandux.dev go?
 Which server is allowed to answer DNS queries for nandux.dev?
@@ -66,19 +66,19 @@ Can this domain prove ownership of a service?
 
 A **DNS zone** is the collection of those rules for a domain. For me, the zone is:
 
-```text
+```
 nandux.dev
 ```
 
 The **apex** (also called root or naked domain) is the domain without a prefix:
 
-```text
+```
 nandux.dev
 ```
 
 These are subdomains:
 
-```text
+```
 www.nandux.dev
 api.nandux.dev
 blog.nandux.dev
@@ -90,15 +90,15 @@ The prefixes—`www`, `api`, and `blog`—are the subdomains.
 
 I initially thought every DNS record was just another way to point a domain somewhere. That is not true. Each type exists to answer a different networking question.
 
-| Record | What it answers | Example |
-| --- | --- | --- |
-| `A` | What IPv4 address should this hostname use? | `nandux.dev → 216.198.79.1` |
-| `AAAA` | What IPv6 address should this hostname use? | `api.nandux.dev → 2606:...` |
-| `CNAME` | Which hostname is this an alias for? | `www.nandux.dev → <vercel-hostname>` |
-| `NS` | Which nameservers are authoritative for this domain? | `nandux.dev → GoDaddy nameservers` |
-| `SOA` | What is the authority/version metadata for this DNS zone? | Zone configuration managed by the DNS provider |
-| `MX` | Which server receives email for this domain? | `mail provider hostname` |
-| `TXT` | What verification or policy text belongs to this domain? | Google verification, SPF, DKIM, DMARC |
+| Record  | What it answers                                           | Example                                        |
+| ------- | --------------------------------------------------------- | ---------------------------------------------- |
+| `A`     | What IPv4 address should this hostname use?               | `nandux.dev → 216.198.79.1`                    |
+| `AAAA`  | What IPv6 address should this hostname use?               | `api.nandux.dev → 2606:...`                    |
+| `CNAME` | Which hostname is this an alias for?                      | `www.nandux.dev → <vercel-hostname>`           |
+| `NS`    | Which nameservers are authoritative for this domain?      | `nandux.dev → GoDaddy nameservers`             |
+| `SOA`   | What is the authority/version metadata for this DNS zone? | Zone configuration managed by the DNS provider |
+| `MX`    | Which server receives email for this domain?              | `mail provider hostname`                       |
+| `TXT`   | What verification or policy text belongs to this domain?  | Google verification, SPF, DKIM, DMARC          |
 
 For a basic Vercel portfolio, I only had to edit two records: one `A` record and one `CNAME` record.
 
@@ -106,7 +106,7 @@ For a basic Vercel portfolio, I only had to edit two records: one `A` record and
 
 An A record maps a hostname directly to an IPv4 address:
 
-```text
+```
 Type:  A
 Name:  @
 Value: 216.198.79.1
@@ -114,7 +114,7 @@ Value: 216.198.79.1
 
 In a DNS dashboard, `@` is shorthand for the apex domain. So the record means:
 
-```text
+```
 nandux.dev → 216.198.79.1
 ```
 
@@ -124,7 +124,7 @@ The browser asks DNS for the IP address of `nandux.dev`, receives that address, 
 
 An `AAAA` record does the same job for IPv6:
 
-```text
+```
 A     → IPv4, such as 216.198.79.1
 AAAA  → IPv6, such as 2001:db8:85a3::8a2e:370:7334
 ```
@@ -135,7 +135,7 @@ I did not add an AAAA record manually. The rule here is simple: use exactly the 
 
 A CNAME means **canonical name**. In practical terms, it is an alias.
 
-```text
+```
 Type:  CNAME
 Name:  www
 Value: 0f35b3bdba90d866.vercel-dns-017.com.
@@ -143,7 +143,7 @@ Value: 0f35b3bdba90d866.vercel-dns-017.com.
 
 That says:
 
-```text
+```
 www.nandux.dev
     is an alias for
 0f35b3bdba90d866.vercel-dns-017.com
@@ -153,7 +153,7 @@ Notice what is missing: there is no IP address in the CNAME record.
 
 The resolver follows the alias and asks for the A/AAAA records of the Vercel hostname. Vercel can return the current addresses for its edge network.
 
-```text
+```
 www.nandux.dev
     ↓ CNAME
 Vercel-managed hostname
@@ -171,13 +171,13 @@ The real benefit is not that a CNAME is automatically faster or more reliable. T
 
 With an A record, I configure a specific IP address in GoDaddy:
 
-```text
+```
 nandux.dev → 216.198.79.1
 ```
 
 With a CNAME, I configure a stable Vercel hostname:
 
-```text
+```
 www.nandux.dev → 0f35b3bdba90d866.vercel-dns-017.com
 ```
 
@@ -199,7 +199,7 @@ Another thing that confused me: if many sites share Vercel edge IPs, how can Ver
 
 The IP gets the request to Vercel's building. The hostname tells Vercel which apartment to deliver it to.
 
-```text
+```
 Vercel edge IP       = building address
 www.nandux.dev       = apartment number
 Production deployment = the app version inside that apartment
@@ -207,7 +207,7 @@ Production deployment = the app version inside that apartment
 
 A request roughly travels like this:
 
-```text
+```
 www.nandux.dev
     ↓ DNS resolves to Vercel
 Browser connects to a Vercel edge endpoint
@@ -237,20 +237,20 @@ A CNAME means, "this name is only an alias—follow the target hostname." That c
 
 The apex domain must contain records like:
 
-```text
+```
 nandux.dev  NS   <authoritative nameserver>
 nandux.dev  SOA  <zone authority metadata>
 ```
 
 So this is valid:
 
-```text
+```
 www.nandux.dev  CNAME  0f35b3bdba90d866.vercel-dns-017.com.
 ```
 
 But this is not valid in standard DNS:
 
-```text
+```
 nandux.dev  CNAME  0f35b3bdba90d866.vercel-dns-017.com.
 nandux.dev  NS     ...
 nandux.dev  SOA    ...
@@ -266,7 +266,7 @@ This distinction saved me from mixing up two unrelated concepts.
 
 A CNAME is a **DNS lookup rule**:
 
-```text
+```
 www.nandux.dev → Vercel hostname
 ```
 
@@ -274,7 +274,7 @@ It does not change the URL in the browser.
 
 A redirect is an **HTTP response**:
 
-```text
+```
 nandux.dev → https://www.nandux.dev
 ```
 
@@ -288,7 +288,7 @@ Vercel can receive a request for one hostname and respond with a `307` or `308` 
 
 A CNAME value must be a hostname, not an IP address.
 
-```text
+```
 # Wrong
 www CNAME 216.198.79.1
 
@@ -308,14 +308,14 @@ The safest rule is: copy the exact A or CNAME value Vercel displays in **Project
 
 Both can technically work, but then users and search engines see two addresses for the same content:
 
-```text
+```
 https://nandux.dev
 https://www.nandux.dev
 ```
 
 Choose one canonical URL and redirect the other one. I prefer the clean apex URL, so my intended final behavior is:
 
-```text
+```
 www.nandux.dev → https://nandux.dev
 ```
 

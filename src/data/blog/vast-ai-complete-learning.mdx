@@ -1,8 +1,8 @@
 ---
-title: "What I Learned Running Coding Models on Vast.ai"
-description: "A beginner-friendly journey through model parameters, quantization, VRAM, multi-GPU inference, Ollama, Open WebUI, SSH tunneling, context windows, and cloud GPU economics."
-image: "/blog/vast-ai.png"
-date: "2026-09-01"
+title: 'What I Learned Running Coding Models on Vast.ai'
+description: 'A beginner-friendly journey through model parameters, quantization, VRAM, multi-GPU inference, Ollama, Open WebUI, SSH tunneling, context windows, and cloud GPU economics.'
+image: '/blog/vast-ai.png'
+date: '2026-09-01'
 tags:
   - vast-ai
   - ollama
@@ -33,7 +33,7 @@ This is the step-by-step breakdown I wish I had before starting.
 
 When I saw:
 
-```text
+```
 Qwen 3.8 27B
 ```
 
@@ -122,7 +122,7 @@ This also explains why simply finding "the GPU with the most VRAM" isn't enough.
 
 I need to ask:
 
-```text
+```
 How much VRAM?
 How much memory bandwidth?
 How much compute?
@@ -135,7 +135,7 @@ What context?
 
 Then I started seeing machines listed with:
 
-```text
+```
 PCIe 4.0 ×16
 PCIe 4.0 ×8
 PCIe 3.0 ×16
@@ -168,7 +168,7 @@ This is why I stopped looking at PCIe in isolation.
 
 A GPU with:
 
-```text
+```
 PCIe 4.0 ×16
 ```
 
@@ -186,7 +186,7 @@ Yes — but two GPUs don't magically become one giant GPU.
 
 For example:
 
-```text
+```
 GPU 1 → 32 GB
 GPU 2 → 32 GB
 ```
@@ -229,7 +229,7 @@ That was a much better way of thinking about multi-GPU machines.
 
 Then I encountered names like:
 
-```text
+```
 Q4_K_M
 Q8_0
 BF16
@@ -280,7 +280,7 @@ I also need to know the representation of those parameters.
 
 Ollama showed me entries such as:
 
-```text
+```
 qwen3.8:27b
 qwen3.8:27b-q4_K_M
 qwen3.8:27b-q8_0
@@ -311,7 +311,7 @@ My first setup used a preconfigured Vast.ai template.
 
 It included things like:
 
-```text
+```
 Ollama
 Open WebUI
 Caddy
@@ -330,7 +330,7 @@ That taught me an important lesson:
 
 For a serious setup, I want to know:
 
-```text
+```
 Which Ollama binary?
 Which server?
 Which model?
@@ -384,7 +384,7 @@ I could keep Open WebUI open on Vast for interactive use while connecting the co
 
 The Vast environment variables were a big clue:
 
-```text
+```
 OLLAMA_BASE_URL=http://localhost:21434
 OLLAMA_HOST=0.0.0.0:21434
 OLLAMA_PORT=21434
@@ -392,7 +392,7 @@ OLLAMA_PORT=21434
 
 So even though Ollama commonly uses port `11434`, this particular setup was configured to use:
 
-```text
+```
 21434
 ```
 
@@ -400,7 +400,7 @@ inside the container.
 
 I could verify it directly:
 
-```bash
+```
 curl http://localhost:21434/api/tags
 ```
 
@@ -408,13 +408,13 @@ which returned the available models.
 
 I also checked the running server:
 
-```bash
+```
 ps aux | grep '[o]llama'
 ```
 
 and:
 
-```bash
+```
 curl http://localhost:21434/api/version
 ```
 
@@ -428,7 +428,7 @@ This was one of the most confusing networking concepts at first.
 
 Docker port mappings look like:
 
-```text
+```
 HOST_PORT:CONTAINER_PORT
 ```
 
@@ -447,7 +447,7 @@ The important thing is to inspect the actual configuration instead of assuming t
 
 In my case, the template had Ollama configured around port `21434`, which is why:
 
-```bash
+```
 curl http://localhost:21434/api/tags
 ```
 
@@ -459,7 +459,7 @@ Once Ollama worked inside the Vast instance, I wanted my Mac to access it direct
 
 The SSH tunnel looked like:
 
-```bash
+```
 ssh -L 11434:localhost:21434 ...
 ```
 
@@ -471,13 +471,13 @@ Because the two sides are different.
 
 The format is:
 
-```text
+```
 LOCAL_PORT:REMOTE_HOST:REMOTE_PORT
 ```
 
 So:
 
-```text
+```
 11434:localhost:21434
 ```
 
@@ -496,7 +496,7 @@ It didn't have to be `11434`.
 
 I could have used another local port:
 
-```text
+```
 localhost:9999 → Vast localhost:21434
 ```
 
@@ -512,7 +512,7 @@ Once the tunnel was working, I could test the API directly instead of going thro
 
 For example:
 
-```bash
+```
 curl 'http://localhost:11434/api/chat' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -578,7 +578,7 @@ This was probably the most important debugging lesson.
 
 My model reported:
 
-```text
+```
 context length: 262144
 ```
 
@@ -588,19 +588,19 @@ Not quite.
 
 Running:
 
-```bash
+```
 ollama ps
 ```
 
 showed:
 
-```text
+```
 qwen3.8:27b    17 GB    100% GPU    32768
 ```
 
 And the underlying process made it even clearer:
 
-```text
+```
 llama-server ... -c 32768
 ```
 
@@ -618,7 +618,7 @@ Those aren't the same thing.
 
 This explained the error:
 
-```text
+```
 request (33713 tokens) exceeds the available context size (32768 tokens)
 ```
 
@@ -643,13 +643,13 @@ A coding agent can put a lot of information into one context:
 
 So:
 
-```text
+```
 "Model supports 256K"
 ```
 
 and:
 
-```text
+```
 "My current agent session has 256K available"
 ```
 
@@ -663,19 +663,19 @@ I learned that I could explicitly configure the context length.
 
 For example:
 
-```bash
+```
 OLLAMA_CONTEXT_LENGTH=131072
 ```
 
 corresponds to:
 
-```text
+```
 131072 tokens = 128K
 ```
 
 The common values are:
 
-```text
+```
 32K   = 32768
 64K   = 65536
 128K  = 131072
@@ -684,7 +684,7 @@ The common values are:
 
 After setting 128K, `ollama ps` showed:
 
-```text
+```
 CONTEXT
 131072
 ```
@@ -727,14 +727,14 @@ On a machine with roughly 48 GB of GPU VRAM, I tested the 27B model.
 
 At 128K context, I observed approximately:
 
-```text
+```
 VRAM used:  ~27.4 GB
 VRAM free:  ~21.1 GB
 ```
 
 and:
 
-```text
+```
 PROCESSOR  100% GPU
 CONTEXT    131072
 ```
@@ -755,7 +755,7 @@ Then I looked at **Qwen3-Coder-Next Q4_K_M**.
 
 The model listing showed roughly:
 
-```text
+```
 52 GB
 256K context
 ```
@@ -766,7 +766,7 @@ A single 24 GB GPU obviously isn't enough for the model.
 
 I started comparing configurations such as:
 
-```text
+```
 4 × 24 GB
 ─────────
 96 GB total VRAM
@@ -774,7 +774,7 @@ I started comparing configurations such as:
 
 and:
 
-```text
+```
 2 × 48 GB
 ─────────
 96 GB total VRAM
@@ -786,7 +786,7 @@ A 52 GB model can potentially be distributed across multiple GPUs, but total VRA
 
 I also care about:
 
-```text
+```
 GPU memory bandwidth
 GPU compute
 PCIe topology
@@ -800,19 +800,19 @@ price per hour
 
 I compared machines with configurations such as:
 
-```text
+```
 4 × RTX 3090
 ```
 
 and:
 
-```text
+```
 2 × RTX A6000
 ```
 
 and:
 
-```text
+```
 4 × RTX A5000
 ```
 
@@ -847,13 +847,13 @@ Then I checked the billing.
 
 I saw a download charge around:
 
-```text
+```
 $1.43
 ```
 
 for roughly:
 
-```text
+```
 54.8 GB
 ```
 
@@ -865,7 +865,7 @@ The advertised GPU hourly price isn't necessarily the complete cost.
 
 I need to think about:
 
-```text
+```
 GPU rental
 +
 Storage
@@ -895,14 +895,14 @@ flowchart TD
 
 Destroy the instance:
 
-```text
+```
 Instance ❌
 Volume   ✅
 ```
 
 Create another instance on the same physical host:
 
-```text
+```
 Instance ✅
 Volume   ✅
 ```
@@ -959,61 +959,61 @@ I want to inspect each layer.
 
 ### Check the Ollama version
 
-```bash
+```
 ollama --version
 ```
 
 ### Check the API
 
-```bash
+```
 curl http://localhost:21434/api/version
 ```
 
 ### Check available models
 
-```bash
+```
 curl http://localhost:21434/api/tags
 ```
 
 ### Check the model metadata
 
-```bash
+```
 ollama show qwen3.8:27b
 ```
 
 ### Check what is actually loaded
 
-```bash
+```
 ollama ps
 ```
 
 ### Inspect the actual Ollama server process
 
-```bash
+```
 ps aux | grep '[o]llama'
 ```
 
 This is particularly useful because the command line can expose runtime settings such as:
 
-```text
+```
 -c 32768
 ```
 
 ### Check GPU memory and utilization
 
-```bash
+```
 nvidia-smi
 ```
 
 ### Check memory per GPU
 
-```bash
+```
 nvidia-smi --query-gpu=name,memory.total,memory.used,memory.free --format=csv
 ```
 
 ### Check multi-GPU topology
 
-```bash
+```
 nvidia-smi topo -m
 ```
 
@@ -1029,13 +1029,13 @@ I'd first decide:
 
 For example:
 
-```text
+```
 Qwen3.8:27B
 ```
 
 or:
 
-```text
+```
 Qwen3-Coder-Next
 ```
 
@@ -1047,13 +1047,13 @@ I'd choose a suitable NVIDIA-compatible quantization and compare quality/perform
 
 Not just:
 
-```text
+```
 "256K sounds cool."
 ```
 
 Instead:
 
-```text
+```
 How much context does my coding workflow actually consume?
 ```
 
@@ -1061,7 +1061,7 @@ How much context does my coding workflow actually consume?
 
 I'd compare:
 
-```text
+```
 VRAM
 GPU architecture
 memory bandwidth
