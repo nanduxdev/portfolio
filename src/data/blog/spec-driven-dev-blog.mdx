@@ -1,0 +1,409 @@
+---
+title: "I Gave Every AI Agent in My Repo the Same Spec-Driven Brain"
+description: "How I built a Kiro-style spec workflow manually across Cursor, Antigravity, and Claude Code — same protocol, same slash commands, same gates, three different agents reading from one source of truth."
+image: "/blog/spec-driven.png"
+date: "2026-10-03"
+tags:
+  - AI Agents
+  - Developer Tooling
+  - Next.js
+  - Cursor
+  - Claude Code
+isPublished: true
+---
+
+I've been building SkillTrail across three different AI coding agents — Cursor, Antigravity, and Claude Code.
+
+Each one is good at something slightly different. But they all share the same problem: they don't automatically know what I decided three weeks ago, what the domain rules are, or why a specific constraint exists in the codebase.
+
+The result was context drift. Not bad code — just agents making plausible decisions that quietly contradicted things I'd already figured out.
+
+The agent isn't the problem. The missing memory is.
+
+That's what made Kiro's spec-driven approach click for me. Instead of trusting the AI conversation as the source of truth, you turn the work into **persistent, reviewable artifacts** that any agent can read before writing a line of code.
+
+I liked the idea. I didn't want another IDE.
+
+So I built the same methodology manually — one `.specs/` directory, one `WORKFLOW.md`, and then wired it up for all three agents to follow the same protocol.
+
+Here's exactly what I built and why.
+
+---
+
+## The Problem I Was Actually Solving
+
+SkillTrail already has a lot of product thinking written down.
+
+There are documented invariants around things like:
+
+- AI proposals must never silently overwrite a user's Draft
+- A scheduled Publication owns an immutable snapshot — Draft edits after scheduling don't quietly change what's queued
+- There's exactly one active Draft per platform per Composition — enforced at the database level
+- Content deletion is blocked while a live Publication exists in its composition tree
+
+These aren't just coding rules. They're domain invariants — things that must remain true regardless of how the code is refactored, what feature we're adding, or which agent is writing the implementation.
+
+The problem is that when I say "build LinkedIn draft generation," no agent in any tool automatically knows about those invariants unless I paste them in every time. And pasting them in every conversation doesn't scale.
+
+> **The agent shouldn't be responsible for remembering the product. The repository should.**
+
+That's the thesis I borrowed from Kiro and implemented myself.
+
+---
+
+## The Spec Directory Structure
+
+Everything lives under `.specs/` at the repo root:
+
+```text
+.specs/
+  WORKFLOW.md                      ← the agent protocol (this is the brain)
+  features/
+    <feature-slug>/
+      requirements.md
+      analysis.md
+      design.md
+      tasks.md
+  bugfixes/
+    <bug-slug>/
+      analysis.md
+      tasks.md
+```
+
+Separately, the product and domain authority stay in `docs/`:
+
+```text
+docs/
+  product.md        ← what SkillTrail is, V1 scope
+  domain.md         ← domain concepts + numbered invariants (INVARIANT-*)
+  architecture.md   ← stack, system boundaries, sync-vs-background rules
+  design.md         ← visual/brand direction
+```
+
+The separation matters:
+
+- **`docs/`** tells the agent what SkillTrail is — the durable product and domain knowledge
+- **`.specs/`** tells the agent what we're changing *right now* — feature-specific context
+
+Mixing them would mean every feature spec drags in everything. Keeping them separate means the agent reads the right authority for the right question.
+
+---
+
+## WORKFLOW.md: The Protocol Every Agent Reads
+
+The heart of the whole system is `.specs/WORKFLOW.md`.
+
+It opens with this:
+
+> *"Read this file in full before starting or resuming work on any feature or bugfix. Do not skip steps."*
+
+And it defines a reading order before writing anything:
+
+1. `docs/product.md` — V1 scope and product decisions
+2. `docs/domain.md` — domain concepts and numbered invariants
+3. `docs/architecture.md` — system boundaries, sync vs. background rules
+4. `db/schema/*.ts` + `db/relations.ts` — the actual schema, not what would be convenient
+
+That last point is enforced explicitly:
+
+> *"Never invent tables, columns, indexes, routes, or config not present in the above. If something needed for a spec isn't in the repo, say so explicitly in the relevant spec file rather than guessing."*
+
+That single rule has prevented a lot of hallucinated schema assumptions.
+
+---
+
+## The Six Steps (With Gates That Actually Block)
+
+The workflow defines six steps. No step can start until the previous one's gate is closed.
+
+### Step 1 — Requirements in EARS Syntax
+
+EARS stands for Easy Approach to Requirements Syntax. Every requirement follows this pattern:
+
+```text
+WHEN <condition>
+THEN the system SHALL <behavior>
+[AND SHALL NOT <behavior>]
+```
+
+Under each requirement, two things are mandatory:
+
+```markdown
+Consistent with: INVARIANT-AI-003
+Schema impact: none | ⚠ see design.md
+```
+
+That second line is not decoration. The agent is required to actually open `docs/domain.md`, find the invariant, and verify the requirement doesn't contradict it — not just assert consistency.
+
+And the schema impact flag forces a decision before design even starts: does this feature need a column, table, or constraint that doesn't exist yet? If so, we stop and call it out rather than discovering it mid-implementation.
+
+**Gate:** every requirement needs an EARS clause and a consistency line before moving to analysis.
+
+### Step 2 — Analysis
+
+This is the step I used to skip. Now it's mandatory.
+
+The agent reads `requirements.md` against both `docs/domain.md` and `docs/architecture.md` — not just the sections a requirement points to, the whole thing — and produces `analysis.md` covering:
+
+- **Contradictions** — a requirement that conflicts with a stated invariant or architectural boundary
+- **Gaps** — something implied but not stated (ownership checks, error paths, auth behavior)
+- **Ambiguities requiring a decision** — based on a specific rule in the workflow
+
+That ambiguity rule is worth quoting directly:
+
+> *Low-risk implementation ambiguity (naming, file layout, minor UX detail): pick the simplest reasonable interpretation, state the assumption inline, keep going.*
+>
+> *Ambiguity touching domain behavior, security, database structure, publication behavior, AI review semantics, or architecture: stop. Write it into `analysis.md` under "Ambiguities requiring a decision" and wait for the developer, rather than assuming.*
+
+That distinction between "just pick something" and "stop and ask" has been the most practically useful part of the whole protocol. The agent isn't expected to never make decisions — it's expected to know which decisions it shouldn't make unilaterally.
+
+**Gate:** every open item must be closed (resolved in `requirements.md`, or explicitly accepted) before design starts.
+
+### Step 3 — Design With a FACT/INFERENCE/RECOMMENDATION/UNKNOWN Structure
+
+Once analysis is clean, the agent produces `design.md`. But not just a vague "here's how I'd build it" document.
+
+Every claim is labeled:
+
+- **FACT** — stated directly in docs or directly observable in the code
+- **INFERENCE** — logically follows from stated facts
+- **RECOMMENDATION** — proposed approach, open to challenge, not binding yet
+- **UNKNOWN** — not established anywhere in the repo
+
+That last label is the most important one. Agents have a strong pull toward turning guesses into facts because it makes the output sound complete. The UNKNOWN label forces the agent to be honest when something isn't established.
+
+For example, for a feature that needs a domain service:
+
+```markdown
+### FACT
+AI calls go through the internal AiProvider interface (architecture.md).
+
+### INFERENCE
+Draft generation belongs in lib/domain, not directly inside a Route Handler
+(architecture.md domain layer rule).
+
+### RECOMMENDATION
+Add a generateDraftProposal() function to the relevant domain module.
+
+### UNKNOWN
+The exact existing file path for this module. Must be inspected, not assumed.
+```
+
+I don't want: *"I'll create `services/draft-generator.ts` because that seems right."*
+
+I want: *"I need to inspect the repo before naming a file."*
+
+The design step also has the one gate in the whole protocol that **requires a human**:
+
+> *Do not generate `tasks.md` until Schema Impact is `none`, or has been shown to the developer and explicitly accepted.*
+
+Schema changes are not to be recommended casually. If `design.md` has a schema impact section, it blocks until I say it's approved.
+
+### Step 4 — Tasks as an Ordered, PR-Sized Checklist
+
+After design is approved, `tasks.md` breaks the work into independently-completable tasks:
+
+```markdown
+- [ ] 1. Add domain operation — touches: lib/domain/drafts.ts — tests: unit
+- [ ] 2. Add proposal acceptance — touches: lib/domain/drafts.ts — tests: unit + property (INVARIANT-AI-003) — depends on 1
+- [ ] 3. Add route handler — touches: app/api/... — tests: none — depends on 2
+- [ ] 4. Add UI — touches: app/... — tests: none — depends on 3
+```
+
+Each task says what it touches, what tests are expected, and what it depends on. The agent checks boxes off as work is actually done — not speculatively.
+
+**Gate:** implementation starts only once `tasks.md` exists.
+
+### Step 5 — Bugfix Specs
+
+Bugs get a different starting point. Not requirements — a structured analysis:
+
+```markdown
+## Reproduction
+Exact steps.
+
+## Current behavior (defect)
+What happens now.
+
+## Expected behavior (EARS)
+WHEN <condition> THEN the system SHALL <correct behavior>
+
+## Must not change (regression guard, EARS)
+WHEN <condition> THEN the system SHALL CONTINUE TO <existing behavior>
+
+## Root cause
+(fill in once actually found — don't guess before investigating)
+
+## Schema impact
+none | ⚠ see note
+```
+
+The root cause section cannot be filled in speculatively. The agent investigates first.
+
+Then comes a property test using `fast-check` encoding both the fix and the "must not change" clause:
+
+```ts
+import { test } from "@fast-check/vitest";
+import fc from "fast-check";
+
+test.prop([/* domain shape generators */])(
+  "draft-proposal-isolation: AI proposal never silently overwrites Draft",
+  (input) => {
+    // assert the fix
+    // assert the must-not-change clause in the same test
+  }
+);
+```
+
+One rule I particularly like: the test must be shown to fail on the pre-fix code before it counts as a regression guard. A test that only ever passes isn't proving anything.
+
+And `fast-check` is not added silently. The workflow explicitly says: *"The first time this step runs, ask the developer to approve adding `fast-check` as a dev dependency."*
+
+### Step 6 — Test Strategy
+
+The protocol closes with an explicit test pyramid:
+
+| Layer | Use for | Where |
+|---|---|---|
+| **Unit (majority)** | Every domain function: happy path, validation, edge cases | `tests/unit/` |
+| **Property (targeted)** | Domain invariants, schema uniqueness, ownership rules | `tests/property/` |
+| **E2E (small, curated)** | Fixed list of critical user journeys — not every flow | `e2e/` |
+
+Property test candidates are enumerated by invariant ID. E2E candidate journeys are a short, named list — not "cover everything." Heavy E2E is expensive and slow, and the workflow says so directly.
+
+---
+
+## How I Wired It Up for Three Agents
+
+The interesting part is that all three agents run the same protocol. The wiring is just different per tool.
+
+### Cursor
+
+A `.cursor/rules/spec-protocol.mdc` file with `alwaysApply: true` points at `.specs/WORKFLOW.md`. Every Cursor chat, Plan Mode session, and Agent session loads it automatically. Slash commands live in `.cursor/commands/`.
+
+### Antigravity (AGY)
+
+Antigravity doesn't auto-load files the way Cursor does — you register them once via the Agent Panel's Workspace Rules, which writes to `.agents/rules/` in the repo. After that, every conversation picks it up.
+
+The workflow files live under `.agents/workflows/`, and Antigravity surfaces them as inline `/spec-*` commands.
+
+### Claude Code
+
+This was the most interesting one to set up, because Claude Code's memory model is different from both Cursor and Antigravity.
+
+Rules in `.claude/rules/` load automatically every session — no `alwaysApply` flag, no registration step. Both rules I created (`spec-protocol.md` and `domain-logic.md`) load unconditionally.
+
+Skills live in `.claude/skills/<name>/SKILL.md`, and the directory name becomes the slash command. So:
+
+```text
+.claude/skills/
+  spec-requirements/SKILL.md   → /spec-requirements
+  spec-analyze/SKILL.md        → /spec-analyze
+  spec-design/SKILL.md         → /spec-design
+  spec-tasks/SKILL.md          → /spec-tasks
+  spec-implement/SKILL.md      → /spec-implement
+  spec-bugfix/SKILL.md         → /spec-bugfix
+```
+
+Each `SKILL.md` has a `description:` frontmatter field. That's the part that makes Claude Code skills slightly more powerful than flat command files: Claude can auto-invoke the right step when context makes it unambiguous, not only when you explicitly type `/spec-analyze`.
+
+The root `CLAUDE.md` imports `AGENTS.md` (so all the SkillTrail rules apply) and adds a quick-reference table of the commands:
+
+```markdown
+@AGENTS.md
+
+# Spec-Driven Development
+
+Read `.specs/WORKFLOW.md` before starting any feature or bugfix.
+
+| Command               | Step                                          |
+|-----------------------|-----------------------------------------------|
+| /spec-requirements    | Step 1 — requirements.md in EARS syntax       |
+| /spec-analyze         | Step 2 — analysis.md (contradictions, gaps)   |
+| /spec-design          | Step 3 — design.md with Schema Impact gate    |
+| /spec-tasks           | Step 4 — tasks.md as ordered checklist        |
+| /spec-implement       | Step 5 — implement, test, check off boxes     |
+| /spec-bugfix          | Bugfix — analysis.md + property test          |
+```
+
+### The `domain-logic.md` Rule
+
+One rule I wired up for all three agents that's worth calling out separately: domain logic must live in `lib/domain`, never directly in Route Handlers.
+
+The rule specifies what a Route Handler is and isn't allowed to do. It ends with:
+
+```text
+HTTP Route Handler
+→ lib/domain
+→ database / external services
+```
+
+Not:
+
+```text
+HTTP Route Handler
+→ database
+→ business logic in the route
+```
+
+This matters for SkillTrail specifically because domain logic is shared between Next.js request handlers and Trigger.dev background tasks. If an agent puts a business rule in a Route Handler, it immediately creates a duplication problem when that same logic needs to run in the background.
+
+The rule exists in `.agents/rules/domain-logic.md`, `.claude/rules/domain-logic.md`, and `.cursor/rules/domain-logic.mdc` — one source of truth, three wiring locations.
+
+---
+
+## What Changed in My Development Loop
+
+**Before:**
+
+```text
+idea → chat → agent writes code → debug → discover architectural conflict → rewrite
+```
+
+**Now:**
+
+```text
+idea → /spec-requirements → /spec-analyze → /spec-design
+     → schema impact gate (human) → /spec-tasks → /spec-implement → tests pass
+```
+
+It sounds slower. Sometimes the requirements and analysis steps take 20 minutes before a line of code is written.
+
+But the implementation itself is significantly more predictable because the agent isn't making product decisions and implementation decisions at the same time. By the time we get to tasks, the scope is tight, the constraints are explicit, and the files to touch are listed.
+
+The other thing that changed: when I come back to a feature after a week, the spec is still there. I don't have to reconstruct the reasoning from git history or a chat transcript I no longer have.
+
+> **Git becomes the memory. The spec becomes the contract. The agent becomes the executor.**
+
+---
+
+## The Takeaway
+
+If you're using any AI coding agent for a project with real domain logic — authentication, data ownership, background jobs, state machines — the conversation alone isn't a reliable source of truth.
+
+The repository needs to be.
+
+You don't need a special IDE for this. You need:
+
+```text
+.specs/
+  WORKFLOW.md        ← the protocol
+  features/
+    <slug>/
+      requirements.md
+      analysis.md
+      design.md
+      tasks.md
+```
+
+Then wire up whatever rules and commands your agent(s) support to point at it.
+
+The goal isn't more documentation. It's **less ambiguity reaching the agent before implementation.**
+
+Start with a single feature. Write the requirements in EARS form. Run the analysis step. See what the agent finds before you ask it to write code.
+
+That step alone will probably catch something you would have discovered halfway through implementation instead.
+
+---
+
+*SkillTrail is a developer tool for turning work into stories — built solo, with AI agents, following the protocol described above. The spec files and workflow are all in the public repo at https://github.com/nanduxdev/SkillTrail. Don't forget to give a Star if you like my work.*
